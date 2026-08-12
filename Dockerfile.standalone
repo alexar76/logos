@@ -1,0 +1,89 @@
+# Standalone image for the GitHub mirror (oracle-core vendored at publish time).
+# Build from the satellite repo root:
+#   docker build -f Dockerfile.standalone -t ghcr.io/alexar76/logos .
+
+# ── Stage 1: frontend build ──────────────────────────────────────────────────
+# The mirror exports logos/ AS the repo root, so the React app lives in
+# frontend/ here — there is no package.json at the top level.
+FROM node:22-alpine AS frontend-builder
+WORKDIR /src
+COPY frontend/package.json frontend/package-lock.json ./
+RUN npm ci --no-audit --no-fund 2>/dev/null || npm install --no-audit --no-fund
+COPY frontend/ ./
+RUN npm run build
+
+# ── Stage 2: backend + nginx ─────────────────────────────────────────────────
+FROM python:3.11-slim
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    nginx curl supervisor \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+# Vendored monorepo dep
+COPY vendor/oracle-core /app/oracle-core
+COPY . /app/logos
+
+RUN pip install --no-cache-dir -e /app/oracle-core -e /app/logos
+
+# Frontend from build stage
+COPY --from=frontend-builder /src/dist /usr/share/nginx/html
+
+# Nginx config (standalone variant — no resolver needed)
+RUN echo $'server {\n\
+    listen 5199;\n\
+    root /usr/share/nginx/html;\n\
+    index index.html;\n\
+    charset utf-8;\n\
+    gzip on;\n\
+    gzip_types text/css application/javascript application/json image/svg+xml;\n\
+    add_header X-Content-Type-Options nosniff;\n\
+    add_header X-Frame-Options DENY;\n\
+    location /assets/ { expires 1y; add_header Cache-Control "public, immutable"; }\n\
+    location /api/ { proxy_pass http://127.0.0.1:9460; proxy_set_header Host $host; proxy_read_timeout 60s; proxy_buffering off; }\n\
+    location /health { proxy_pass http://127.0.0.1:9460; }\n\
+    location = /.well-known/agent-card.json { proxy_pass http://127.0.0.1:9460; }\n\
+    location / { try_files $uri $uri/ /index.html; }\n\
+}' > /etc/nginx/sites-enabled/default
+
+# Supervisor — explicit /tmp log+pid paths so it runs as the non-root user below.
+RUN printf '%s\n' \
+    '[supervisord]' \
+    'nodaemon=true' \
+    'logfile=/tmp/supervisord.log' \
+    'pidfile=/tmp/supervisord.pid' \
+    '' \
+    '[program:nginx]' \
+    'command=nginx -g "daemon off;"' \
+    'autorestart=true' \
+    'stdout_logfile=/dev/stdout' \
+    'stdout_logfile_maxbytes=0' \
+    'stderr_logfile=/dev/stderr' \
+    'stderr_logfile_maxbytes=0' \
+    '' \
+    '[program:logos]' \
+    'command=python -m logos.main' \
+    'autorestart=true' \
+    'stdout_logfile=/dev/stdout' \
+    'stdout_logfile_maxbytes=0' \
+    'stderr_logfile=/dev/stderr' \
+    'stderr_logfile_maxbytes=0' \
+    > /etc/supervisor/conf.d/logos.conf
+
+# Non-root user.  nginx's default pid path (/run/nginx.pid) is root-owned, and a
+# non-root master exits rather than binding :5199 — move it to /tmp.
+RUN useradd --create-home --uid 1000 logos \
+    && sed -i 's|^pid .*|pid /tmp/nginx.pid;|' /etc/nginx/nginx.conf \
+    && mkdir -p /data/logos /var/log/nginx /var/lib/nginx/body /var/lib/nginx/proxy \
+                /var/lib/nginx/fastcgi /var/lib/nginx/uwsgi /var/lib/nginx/scgi \
+    && chown -R logos:logos /app /data/logos /var/log/nginx /var/lib/nginx /usr/share/nginx/html
+USER logos
+
+EXPOSE 5199
+
+# /health is proxied through nginx to the backend; /api/health does not exist.
+HEALTHCHECK --interval=20s --timeout=6s --retries=5 --start-period=20s \
+    CMD curl -fsS http://127.0.0.1:5199/health || exit 1
+
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/logos.conf"]
