@@ -1,0 +1,101 @@
+# LOGOS CI — the unit suite plus the Postgres dialect, and the dashboard build.
+#
+# The Postgres job is not decoration: the federation tier runs LOGOS on Postgres,
+# and a SQLite-only run cannot catch a schema Postgres rejects — which is exactly
+# how a store that could never open shipped once already.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: logos
+          POSTGRES_PASSWORD: logos
+          POSTGRES_DB: logos_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U logos -d logos_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          if [[ -d vendor/oracle-core ]]; then
+            pip install -e vendor/oracle-core -e ".[dev]"
+          else
+            pip install -e ".[dev]"
+          fi
+      - name: Pytest — SQLite (default store)
+        run: pytest -q --tb=short
+      - name: Pytest — Postgres dialect
+        env:
+          LOGOS_TEST_DATABASE_URL: postgresql://logos:logos@127.0.0.1:5432/logos_test
+        run: pytest -q --tb=short tests/test_store_postgres.py
+
+  frontend:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Install
+        working-directory: frontend
+        run: npm ci --no-audit --no-fund
+      - name: Typecheck
+        working-directory: frontend
+        run: npx tsc --noEmit -p tsconfig.json
+      - name: Build
+        working-directory: frontend
+        run: npm run build
+      - name: Locale parity — every language carries every key
+        run: |
+          python3 - <<'PY'
+          import json, pathlib, sys
+          d = pathlib.Path("frontend/src/i18n/locales")
+          def flat(o, p=""):
+              out = []
+              for k, v in o.items():
+                  kk = f"{p}.{k}" if p else k
+                  out += flat(v, kk) if isinstance(v, dict) else [kk]
+              return out
+          en = set(flat(json.loads((d / "en.json").read_text())))
+          bad = False
+          for loc in ("ru", "es", "fr", "zh"):
+              keys = set(flat(json.loads((d / f"{loc}.json").read_text())))
+              missing, extra = sorted(en - keys), sorted(keys - en)
+              if missing or extra:
+                  bad = True
+                  print(f"{loc}: missing={missing} extra={extra}")
+          print(f"en carries {len(en)} keys")
+          sys.exit(1 if bad else 0)
+          PY

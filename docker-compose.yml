@@ -1,0 +1,97 @@
+# LOGOS — federation analytics engine. Deployed on the oracle host alongside the
+# oracle family / MOMUS, published on its own domain logos.modelmarket.dev through
+# the nginx TLS edge (see deploy/nginx/logos.modelmarket.dev.conf). The container
+# binds LOOPBACK only — never 0.0.0.0 — so nginx is the sole edge.
+#
+# Build from the MONOREPO ROOT (the image needs oracle-core in context):
+#     docker compose -f logos/docker-compose.yml up -d --build
+# or just:  sudo ./scripts/deploy_logos.sh
+services:
+  logos:
+    build:
+      context: ..
+      dockerfile: logos/Dockerfile
+    container_name: logos
+    environment:
+      LOGOS_PORT: "9460"
+      LOGOS_PUBLIC_URL: ${LOGOS_PUBLIC_URL:-https://logos.modelmarket.dev}
+      LOGOS_CORS_ORIGINS: ${LOGOS_CORS_ORIGINS:-https://logos.modelmarket.dev}
+      # The hub is on the apex host; MOMUS and its Treasury share this host and
+      # are reachable by service name over the shared `ecosystem` network.
+      LOGOS_HUB_URL: ${LOGOS_HUB_URL:-https://modelmarket.dev}
+      LOGOS_METIS_URL: ${LOGOS_METIS_URL:-}
+      LOGOS_MOMUS_URL: ${LOGOS_MOMUS_URL:-http://momus-backend:9400}
+      LOGOS_SKOPOS_URL: ${LOGOS_SKOPOS_URL:-}
+      LOGOS_TREASURY_URL: ${LOGOS_TREASURY_URL:-http://momus-treasury:9401}
+      LOGOS_POLL_INTERVAL_S: ${LOGOS_POLL_INTERVAL_S:-300}
+      # Postgres is the production store; SQLite is the dev default. The PG
+      # dialect is covered by logos/tests/test_store_postgres.py.
+      LOGOS_DATABASE_URL: postgresql://${LOGOS_POSTGRES_USER:-logos}:${LOGOS_POSTGRES_PASSWORD:-logos}@logos-postgres:5432/${LOGOS_POSTGRES_DB:-logos}
+      # When set, every /api/ route requires the X-Logos-Token header. The
+      # dashboard is public read-only, so this is normally left empty.
+      LOGOS_API_TOKEN: ${LOGOS_API_TOKEN:-}
+      # A page load is five calls and a curious visitor clicking through NEXUS,
+      # Consumption and Analytics adds a few more, so the 30/min default is tight
+      # for a public dashboard. The nginx edge still caps bursts at 2 r/s, which is
+      # the layer that actually stops abuse.
+      LOGOS_RATE_MAX: ${LOGOS_RATE_MAX:-90}
+      LOGOS_LLM_API_KEY: ${LOGOS_LLM_API_KEY:-${DEEPSEEK_API_KEY:-}}
+      LOGOS_DATA_DIR: /data/logos
+      # Phase 2 of the PQC migration: sign hybrid Ed25519 + ML-DSA-65. LOGOS signs
+      # through oracle_core (logos/aimarket.py builds the OracleSpec), so this is the
+      # same switch ATLAS, GAIA, MOMUS and the oracle fleet already carry.
+      #
+      # Safe here: the image installs core[pqc] (logos/Dockerfile:28), and the key lives
+      # at ${LOGOS_DATA_DIR}/aimarket_signing_key on the logos_data volume, so the
+      # ML-DSA key written beside it as *_mldsa persists too. The Ed25519 identity is
+      # untouched — that is what keeps a redeploy from republishing LOGOS under a new key.
+      ORACLE_PQC: ${ORACLE_PQC:-1}
+      # Fail-closed convention for the whole factory stack.
+      AIFACTORY_PROD: ${AIFACTORY_PROD:-1}
+      AIFACTORY_CRYPTO_ENABLED: ${AIFACTORY_CRYPTO_ENABLED:-0}
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN:-}
+      TELEGRAM_CHAT_ID: ${TELEGRAM_CHAT_ID:-}
+    ports:
+      # Loopback only — published via nginx (TLS + per-IP limit). A 0.0.0.0 bind
+      # would insert a Docker DNAT rule ahead of UFW and expose the raw port.
+      - "127.0.0.1:5199:5199"
+    volumes:
+      - logos_data:/data
+    depends_on:
+      logos-postgres:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - default
+      - ecosystem
+
+  logos-postgres:
+    image: postgres:16-alpine
+    container_name: logos-postgres
+    environment:
+      POSTGRES_USER: ${LOGOS_POSTGRES_USER:-logos}
+      POSTGRES_PASSWORD: ${LOGOS_POSTGRES_PASSWORD:-logos}
+      POSTGRES_DB: ${LOGOS_POSTGRES_DB:-logos}
+    volumes:
+      - logos_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${LOGOS_POSTGRES_USER:-logos} -d ${LOGOS_POSTGRES_DB:-logos}"]
+      interval: 10s
+      timeout: 4s
+      retries: 5
+    restart: unless-stopped
+    # No published port: only the logos container talks to it, over the default
+    # compose network.
+    networks:
+      - default
+
+volumes:
+  logos_data:
+  logos_postgres_data:
+
+# Shared ecosystem network (the same one the hub / metis / oracles / MOMUS join)
+# so LOGOS can poll them by service name. Created by the hub/oracles stack;
+# `external: true` means LOGOS never owns or recreates it.
+networks:
+  ecosystem:
+    external: true

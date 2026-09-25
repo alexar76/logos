@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>LOGOS — Federation Analytics Engine</title>
+<meta name="description" content="LOGOS — read-only federation snapshots, measured settlement analytics, rolling z-score anomalies, cross-source insights, and a guarded AI assistant."/>
+<meta property="og:type" content="website"/>
+<meta property="og:title" content="LOGOS — Federation Analytics Engine"/>
+<meta property="og:description" content="One node. Every insight. AI-powered analytics over the entire AIMarket federation."/>
+<meta property="og:url" content="https://logos.modelmarket.dev/"/>
+<meta name="theme-color" content="#02030a"/>
+
+<link href="fonts/fonts.css" rel="stylesheet" />
+
+<style>
+:root{
+  --bg:#02030a;--bg2:#050816;--panel:rgba(8,14,30,.55);--panel-solid:rgba(8,14,30,.82);
+  --brd:rgba(80,130,200,.22);--brd-hot:rgba(56,224,255,.55);
+  --ink:#cfe3ff;--muted:#7e9fd0;--faint:#56739f;
+  --cyan:#38e0ff;--violet:#7b5cff;--good:#38ffa6;--amber:#ffcc4d;--pink:#ff5d8a;
+  --radius:16px;--maxw:1140px;
+  --head:'Orbitron',system-ui,sans-serif;--body:'Rajdhani',system-ui,-apple-system,sans-serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.55;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+
+/* ── Galaxy canvas + HUD ── */
+#galaxy{position:fixed;inset:0;z-index:0;display:block}
+.nebula{position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:radial-gradient(50vw 50vw at 15% -5%,rgba(56,224,255,.10),transparent 60%),
+            radial-gradient(46vw 46vw at 92% 6%,rgba(123,92,255,.12),transparent 60%),
+            radial-gradient(60vw 60vw at 50% 116%,rgba(255,93,138,.07),transparent 60%);
+  mix-blend-mode:screen}
+.scan{position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.35;
+  background:repeating-linear-gradient(0deg,rgba(56,224,255,.035) 0 1px,transparent 1px 3px)}
+.vignette{position:fixed;inset:0;z-index:1;pointer-events:none;
+  box-shadow:inset 0 0 240px 40px rgba(0,0,0,.85)}
+.wrap{position:relative;z-index:2;max-width:var(--maxw);margin:0 auto;padding:0 22px}
+
+/* ── Nav ── */
+nav{position:sticky;top:0;z-index:50;backdrop-filter:blur(12px);
+  background:linear-gradient(180deg,rgba(2,3,10,.85),rgba(2,3,10,.35));
+  border-bottom:1px solid var(--brd)}
+nav .row{display:flex;align-items:center;gap:14px;min-height:60px;height:auto;padding:8px 0}
+.brand{display:flex;align-items:center;gap:11px;font-family:var(--head);font-weight:900;letter-spacing:3px;font-size:18px;flex-shrink:0}
+.brand .dot{width:14px;height:14px;border-radius:50%;background:var(--cyan);box-shadow:0 0 14px var(--cyan)}
+.nav-links{display:flex;gap:8px;flex-wrap:wrap;align-items:center;flex:1;justify-content:flex-end}
+.nav-links a{font-family:var(--head);font-size:11px;font-weight:500;letter-spacing:.1em;color:var(--muted);text-decoration:none;padding:6px 10px;border-radius:6px;transition:.15s;white-space:nowrap}
+.nav-links a:hover,.nav-links a.on{color:var(--cyan)}
+.lang-sw{display:flex;gap:0;border:1px solid var(--brd);border-radius:999px;overflow:hidden;flex-shrink:0}
+.lang-sw button{border:none;background:transparent;color:var(--muted);font:600 10px var(--head);letter-spacing:.06em;padding:5px 8px;cursor:pointer;transition:.15s}
+.lang-sw button:hover{color:var(--ink)}
+.lang-sw button.on{background:rgba(56,224,255,.14);color:var(--cyan)}
+
+/* ── Hero ── */
+.hero{padding:54px 0 72px}
+.hero-grid{display:grid;grid-template-columns:minmax(0,.9fr) minmax(430px,1.1fr);align-items:center;gap:28px;min-height:610px}
+.hero-copy{text-align:left;position:relative;z-index:3}
+.hero-kicker{display:flex;align-items:center;gap:10px;margin-bottom:18px;font:600 10px var(--head);letter-spacing:.18em;color:var(--cyan);text-transform:uppercase}
+.hero-kicker:before{content:"";width:36px;height:1px;background:var(--cyan);box-shadow:0 0 10px var(--cyan)}
+.hero-visual{position:relative;height:580px;min-width:0;isolation:isolate;cursor:grab;touch-action:pan-y}
+.hero-visual:active{cursor:grabbing}
+#hero-galaxy{position:absolute;inset:0;width:100%;height:100%;display:block;outline:none}
+.hero-visual:before{content:"";position:absolute;inset:9% 3%;border:1px solid rgba(56,224,255,.08);border-radius:50%;filter:blur(.2px);pointer-events:none}
+.hero-visual:after{content:"";position:absolute;inset:13%;z-index:-1;background:radial-gradient(circle,rgba(56,224,255,.13),rgba(123,92,255,.06) 36%,transparent 68%);filter:blur(24px);pointer-events:none}
+.scene-label{position:absolute;z-index:2;padding:7px 10px;border:1px solid rgba(56,224,255,.25);border-radius:5px;background:rgba(2,6,18,.58);backdrop-filter:blur(8px);font:600 9px var(--head);letter-spacing:.1em;color:var(--muted);pointer-events:none;box-shadow:inset 0 0 18px rgba(56,224,255,.04)}
+.scene-label b{display:block;color:var(--cyan);font-size:11px;margin-bottom:2px}.scene-label.a{top:17%;right:1%}.scene-label.b{bottom:19%;left:0}.scene-label.c{bottom:11%;right:7%}
+.scene-hint{position:absolute;left:50%;bottom:3%;transform:translateX(-50%);font:500 9px var(--head);letter-spacing:.13em;color:var(--faint);white-space:nowrap;pointer-events:none}
+.hero h1{margin:0;font-family:var(--head);font-weight:900;font-size:clamp(36px,7vw,60px);letter-spacing:.14em;
+  background:linear-gradient(90deg,var(--cyan),var(--violet) 55%,var(--pink));-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero .tagline{font-size:clamp(15px,2.2vw,19px);color:var(--muted);margin:14px 0 30px;max-width:590px;line-height:1.55}
+.hero-meta{font-size:13px;color:var(--faint);margin-top:16px}.hero-meta a{color:var(--cyan);opacity:.75;text-decoration:none}.hero-meta a:hover{opacity:1;text-decoration:underline}
+.hero .cta{display:flex;gap:12px;justify-content:flex-start;flex-wrap:wrap}
+.btn{padding:12px 28px;border-radius:999px;font-family:var(--head);font-weight:700;font-size:13px;letter-spacing:.08em;text-decoration:none;transition:.25s;cursor:pointer;border:none}
+.btn-p{background:linear-gradient(135deg,var(--cyan),var(--violet));color:#000;box-shadow:0 0 30px rgba(56,224,255,.25)}
+.btn-p:hover{transform:translateY(-2px);box-shadow:0 0 50px rgba(56,224,255,.4)}
+.btn-g{border:1px solid var(--brd);color:var(--ink);background:var(--panel);backdrop-filter:blur(8px)}
+.btn-g:hover{border-color:var(--brd-hot);box-shadow:0 0 20px rgba(56,224,255,.2)}
+.btn-live{background:var(--good);color:#000;font-weight:900;animation:pulse-live 2s infinite}
+@keyframes pulse-live{0%,100%{box-shadow:0 0 20px rgba(56,255,166,.4)}50%{box-shadow:0 0 40px rgba(56,255,166,.7)}}
+
+/* ── Demo CTA ── */
+.demo-bar{padding:0 0 60px;text-align:center}
+.demo-card{display:inline-block;max-width:620px;background:linear-gradient(135deg,rgba(56,224,255,.06),rgba(123,92,255,.06));border:1px solid var(--brd);border-radius:var(--radius);padding:30px;text-align:center}
+.demo-card h2{margin:0 0 10px;font-family:var(--head);font-weight:700;font-size:20px;letter-spacing:.06em}
+.demo-card p{font-size:15px;color:var(--muted);margin:0 0 18px}
+.demo-links{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+
+/* ── Sections ── */
+.section-head{text-align:center;padding:50px 0 30px}
+.section-head h2{font-family:var(--head);font-weight:700;font-size:clamp(22px,4vw,32px);letter-spacing:.08em;margin:0}
+.section-head p{font-size:15px;color:var(--muted);margin:8px 0 0}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:18px;padding-bottom:40px}
+.card{background:var(--panel);backdrop-filter:blur(10px);border:1px solid var(--brd);border-radius:var(--radius);padding:24px;transition:.2s}
+.card:hover{border-color:var(--brd-hot);box-shadow:0 0 30px rgba(56,224,255,.08);transform:translateY(-1px)}
+.card h3{font-family:var(--head);font-weight:700;font-size:15px;letter-spacing:.04em;margin:0 0 10px}
+.card p{font-size:14px;color:var(--muted);line-height:1.55;margin:0 0 12px}
+.card .links{display:flex;gap:12px;flex-wrap:wrap}
+.card .links a{font-size:12px;font-family:var(--head);font-weight:600;letter-spacing:.04em;color:var(--cyan);text-decoration:none;transition:.15s}
+.card .links a:hover{color:#fff;text-decoration:underline}
+.tag-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.tag{font-size:9px;padding:3px 8px;border-radius:6px;background:rgba(56,224,255,.08);color:var(--cyan);font-family:var(--head);font-weight:500;letter-spacing:.06em}
+
+/* ── Stats bar ── */
+.stats{display:flex;gap:20px;justify-content:center;flex-wrap:wrap;padding:30px 0 50px}
+.stat{text-align:center;min-width:100px}
+.stat .val{font-family:var(--head);font-weight:900;font-size:28px;color:var(--cyan)}
+.stat .lbl{font-size:10px;font-family:var(--head);color:var(--faint);letter-spacing:.1em;margin-top:4px;text-transform:uppercase}
+
+/* ── Footer ── */
+footer{position:relative;z-index:2;text-align:center;padding:40px 24px;color:var(--faint);font-size:12px;border-top:1px solid var(--brd)}
+footer a{color:var(--cyan);text-decoration:none}
+footer a:hover{text-decoration:underline}
+
+@media(max-width:900px){.hero{padding:36px 0 50px}.hero-grid{grid-template-columns:1fr;gap:0;min-height:0}.hero-copy{text-align:center}.hero-kicker{justify-content:center}.hero .tagline{margin-left:auto;margin-right:auto}.hero .cta{justify-content:center}.hero-visual{height:min(560px,82vw);min-height:390px;order:-1;margin-bottom:-36px}.scene-label{display:none}}
+@media(max-width:600px){.hero-visual{height:430px;margin:0 -18px 16px}.nav-links a{font-size:10px;padding:4px 6px}.scene-hint{bottom:7%;font-size:8px}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.scene-hint{display:none}}
+</style>
+</head>
+<body>
+<canvas id="galaxy" aria-hidden="true"></canvas>
+<div class="nebula"></div>
+<div class="scan"></div>
+<div class="vignette"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="wrap row">
+    <div class="brand"><div class="dot"></div>LOGOS</div>
+    <div class="nav-links">
+      <a href="#" class="on" data-i18n="nav_home">Home</a>
+      <a href="#analytics" data-i18n="nav_analytics">Analytics</a>
+      <a href="#nexus" data-i18n="nav_nexus">NEXUS</a>
+      <a href="#assistant" data-i18n="nav_assistant">AI Assistant</a>
+      <a href="#consumption" data-i18n="nav_consumption">Consumption</a>
+    </div>
+    <div class="lang-sw">
+      <button class="on" data-lang="en">EN</button>
+      <button data-lang="ru">RU</button>
+      <button data-lang="es">ES</button>
+      <button data-lang="fr">FR</button>
+      <button data-lang="zh">中文</button>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div class="hero-copy">
+      <div class="hero-kicker" data-i18n="hero_kicker">Federation intelligence / live</div>
+      <h1 data-i18n="hero_title">LOGOS</h1>
+      <p class="tagline" data-i18n-html="hero_tagline"><strong>One node. Every insight.</strong><br/>Read-only analytics over the AIMarket federation — measured settlement-volume projections, catalog pricing, rolling z-score anomaly detection, Metis-assisted insights, and a prompt-injection-guarded assistant.</p>
+      <div class="cta">
+        <a class="btn btn-live" href="https://logos.modelmarket.dev" target="_blank" rel="noopener" data-i18n="hero_cta_live">🟢 Live demo</a>
+        <a class="btn btn-p" href="https://github.com/alexar76/logos" target="_blank" rel="noopener">GitHub ↗</a>
+        <a class="btn btn-g" href="https://github.com/alexar76/logos#readme" target="_blank" rel="noopener" data-i18n="hero_cta_docs">Documentation ↗</a>
+      </div>
+      <p class="hero-meta" data-i18n-html="hero_sub">Part of the <a href="https://modeldev.modelmarket.dev" target="_blank">AICOM ecosystem</a> · <a href="https://github.com/alexar76/aicom">monorepo</a> · MIT</p>
+    </div>
+    <div class="hero-visual" id="hero-visual">
+      <canvas id="hero-galaxy" aria-label="Interactive 3D map of the LOGOS analytics federation" data-i18n-aria="scene_aria"></canvas>
+      <div class="scene-label a"><b data-i18n="scene_endpoints">16 ENDPOINTS</b><span data-i18n="scene_telemetry">LIVE TELEMETRY</span></div>
+      <div class="scene-label b"><b>METIS COUNCIL</b><span data-i18n="scene_insight">NL INSIGHT LAYER</span></div>
+      <div class="scene-label c"><b data-i18n="scene_zscore">ROLLING Z-SCORE</b><span data-i18n="scene_anomaly">ANOMALY METHOD</span></div>
+      <div class="scene-hint" data-i18n="scene_hint">DRAG TO ORBIT · SCROLL TO ZOOM</div>
+    </div>
+  </div>
+</section>
+
+<!-- DEMO CTA -->
+<section class="demo-bar">
+  <div class="wrap">
+    <div class="demo-card">
+      <h2 data-i18n="demo_title">🚀 Try it now</h2>
+      <p data-i18n="demo_text">logos.modelmarket.dev is live. Ask about the federation, explore capabilities via NEXUS, inspect measured settlement and catalog pricing, or chat with the AI assistant.</p>
+      <div class="demo-links">
+        <a class="btn btn-p" href="https://logos.modelmarket.dev" target="_blank" data-i18n="demo_dashboard">📊 Dashboard ↗</a>
+        <a class="btn btn-g" href="https://logos.modelmarket.dev" target="_blank" data-i18n="demo_nexus">🧿 NEXUS ↗</a>
+        <a class="btn btn-g" href="https://logos.modelmarket.dev" target="_blank" data-i18n="demo_chat">🤖 AI Chat ↗</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STATS BAR -->
+<section>
+  <div class="wrap">
+    <div class="stats">
+      <div class="stat"><div class="val">6</div><div class="lbl" data-i18n="stat_views">Dashboard Views</div></div>
+      <div class="stat"><div class="val">16</div><div class="lbl" data-i18n="stat_endpoints">API Endpoints</div></div>
+      <div class="stat"><div class="val">5</div><div class="lbl" data-i18n="stat_languages">Languages</div></div>
+      <div class="stat"><div class="val">80</div><div class="lbl" data-i18n="stat_tests">Tests</div></div>
+      <div class="stat"><div class="val">3D</div><div class="lbl" data-i18n="stat_constellation">Constellation</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- INSIGHTS + ANALYTICS -->
+<section id="analytics">
+  <div class="wrap">
+    <div class="section-head"><h2 data-i18n="s1_title">📊 Insights & Analytics</h2><p data-i18n="s1_p">Natural-language queries answered from live federation data. Professional charts, sortable tables, heatmaps.</p></div>
+    <div class="grid">
+      <div class="card">
+        <h3 data-i18n="s1_c1_title">Federation Insights</h3>
+        <p data-i18n="s1_c1_p">Ask "How long will Treasury last?", "Which hub is slow?", "Any critical findings?" — typed answers with severity, sources, and recommendations.</p>
+        <div class="tag-row"><span class="tag">economy</span><span class="tag">security</span><span class="tag">latency</span><span class="tag">reputation</span></div>
+        <div class="links"><a href="https://logos.modelmarket.dev" target="_blank" data-i18n="link_insights">Open Insights ↗</a></div>
+      </div>
+      <div class="card">
+        <h3 data-i18n="s1_c2_title">Analytics Dashboard</h3>
+        <p data-i18n="s1_c2_p">Line charts (24h trends), bar charts (per-hub), donut charts (severity), heatmap calendar (90-day anomaly activity), sortable+groupable data tables.</p>
+        <div class="tag-row"><span class="tag">line</span><span class="tag">bar</span><span class="tag">donut</span><span class="tag">heatmap</span></div>
+        <div class="links"><a href="https://logos.modelmarket.dev" target="_blank" data-i18n="link_analytics">Open Analytics ↗</a></div>
+      </div>
+      <div class="card">
+        <h3 data-i18n="s1_c3_title">3D Constellation</h3>
+        <p data-i18n="s1_c3_p">The federation as a living starfield — hub nodes as pulsing orbs, connection trails, anomaly rings. Interactive Three.js visualization.</p>
+        <div class="tag-row"><span class="tag">three.js</span><span class="tag">3D</span><span class="tag">WebGL</span></div>
+        <div class="links"><a href="https://logos.modelmarket.dev" target="_blank" data-i18n="link_insights">Open Insights ↗</a></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- NEXUS -->
+<section id="nexus">
+  <div class="wrap">
+    <div class="section-head"><h2 data-i18n="s2_title">🧿 NEXUS — Federation Playground</h2><p data-i18n="s2_p">Select any capability from the catalog, craft JSON input, invoke — and see the routing trace, price, and verifiable result.</p></div>
+    <div class="grid">
+      <div class="card">
+        <h3 data-i18n="s2_c1_title">Capability Browser</h3>
+        <p data-i18n="s2_c1_p">Full catalog of every capability across the federation — names, descriptions, prices, provider hubs. Drop-down selector with live refresh.</p>
+        <div class="links"><a href="https://logos.modelmarket.dev" target="_blank" data-i18n="link_nexus">Open NEXUS ↗</a></div>
+      </div>
+      <div class="card">
+        <h3 data-i18n="s2_c2_title">Manual Invoke</h3>
+        <p data-i18n="s2_c2_p">Craft JSON input, hit INVOKE, and see the result. Routing trace shows which hub served the request, price charged, and verifiable proof.</p>
+        <div class="links"><a href="https://logos.modelmarket.dev" target="_blank" data-i18n="link_try">Try it ↗</a></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- AI ASSISTANT -->
+<section id="assistant">
+  <div class="wrap">
+    <div class="section-head"><h2 data-i18n="s3_title">🤖 AI Assistant</h2><p data-i18n="s3_p">Chat with the LOGOS assistant. Full read-only access to the analytics store. Prompt-injection guarded. Multi-provider LLM support. Voice input.</p></div>
+    <div class="grid">
+      <div class="card">
+        <h3 data-i18n="s3_c1_title">Multi-Provider LLM</h3>
+        <p data-i18n="s3_c1_p">DeepSeek V4 Pro (default), Anthropic Claude, OpenAI, Ollama, LM Studio — same named presets as MOMUS. Switch provider, model, base URL via env vars.</p>
+        <div class="tag-row"><span class="tag">deepseek</span><span class="tag">claude</span><span class="tag">openai</span><span class="tag">ollama</span></div>
+        <div class="links"><a href="https://github.com/alexar76/logos" target="_blank">GitHub ↗</a></div>
+      </div>
+      <div class="card">
+        <h3 data-i18n="s3_c2_title">Input Guard</h3>
+        <p data-i18n="s3_c2_p">Warden-style deterministic prompt-injection filter — blocks prompt extraction, role-switching, token smuggling, and delimiter injection before reaching the LLM.</p>
+        <div class="tag-row"><span class="tag">prompt-injection</span><span class="tag">deterministic</span></div>
+        <div class="links"><a href="https://logos.modelmarket.dev" target="_blank" data-i18n="link_chat">Open AI Chat ↗</a></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONSUMPTION -->
+<section id="consumption">
+  <div class="wrap">
+    <div class="section-head"><h2 data-i18n="s4_title">💰 Consumption Tracking</h2><p data-i18n="s4_p">Measured 24-hour settlement volume, 30-day projection only when that measurement exists, catalog pricing by hub, and CSV export. Missing telemetry remains unavailable—not zero.</p></div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div data-i18n-html="footer_line"><strong style="font-family:var(--head);letter-spacing:.08em">LOGOS</strong> — the analytical brain of the <a href="https://github.com/alexar76/aicom" target="_blank">AICOM open agent economy</a></div>
+    <span style="opacity:.5" data-i18n="footer_stack">MIT · Python 3.11+ · FastAPI · React · Three.js · 80 tests · 16 API endpoints · 6 dashboard views</span>
+  </div>
+</footer>
+
+<script>
+// ── Background galaxy canvas ──
+const canvas=document.getElementById('galaxy'),ctx=canvas.getContext('2d');
+let W,H,stars=[];
+function resize(){
+  const dpr=Math.min(devicePixelRatio||1,2);
+  W=canvas.width=innerWidth*dpr;H=canvas.height=innerHeight*dpr;
+  canvas.style.width=innerWidth+'px';canvas.style.height=innerHeight+'px';
+}
+resize();window.addEventListener('resize',()=>{resize();initStars()});
+function initStars(){
+  stars=[];
+  for(let i=0;i<160;i++){
+    stars.push({
+      x:Math.random()*W,y:Math.random()*H,
+      r:Math.random()*1.2+.3,
+      z:Math.random()*.8+.2,
+      vx:(Math.random()-.5)*.3,vy:(Math.random()-.5)*.3,
+      hue:Math.random()<.15?210:Math.random()<.1?270:195,
+    });
+  }
+}
+initStars();
+let t=0;
+function draw(){
+  t+=.002;ctx.clearRect(0,0,W,H);
+  for(const s of stars){
+    s.x+=s.vx;s.y+=s.vy;
+    if(s.x<0)s.x=W;if(s.x>W)s.x=0;if(s.y<0)s.y=H;if(s.y>H)s.y=0;
+    const a=(.5+Math.sin(t+s.x*.001+s.y*.001)*.3)*s.z;
+    ctx.beginPath();ctx.arc(s.x/devicePixelRatio,s.y/devicePixelRatio,s.r,0,Math.PI*2);
+    ctx.fillStyle=`hsla(${s.hue},80%,70%,${a})`;ctx.fill();
+  }
+  requestAnimationFrame(draw);
+}
+draw();
+
+// ── i18n (5 languages) ──
+const L={en:{},ru:{},es:{},fr:{},zh:{}};
+// EN = defaults in HTML data-i18n attributes
+L.ru={
+  nav_home:'Главная',nav_analytics:'Аналитика',nav_nexus:'NEXUS',nav_assistant:'AI Ассистент',nav_consumption:'Расходы',
+  hero_title:'LOGOS',hero_tagline:'<strong>Один узел. Все инсайты.</strong><br/>Аналитика федерации AIMarket только для чтения — прогноз только из измеренного объёма расчётов, цены каталога, аномалии по скользящему z-score, инсайты с Metis и защищённый от prompt-инъекций ассистент.',
+  hero_cta_live:'🟢 Живое демо',hero_cta_docs:'Документация ↗',hero_sub:'Часть <a href="https://modeldev.modelmarket.dev" target="_blank">экосистемы AICOM</a> · <a href="https://github.com/alexar76/aicom">монорепо</a> · MIT',
+  demo_title:'🚀 Попробуйте сейчас',demo_text:'logos.modelmarket.dev работает. Задайте вопрос о федерации, исследуйте capabilities через NEXUS, проверьте измеренный объём расчётов и цены каталога или пообщайтесь с AI-ассистентом.',
+  demo_dashboard:'📊 Панель ↗',demo_nexus:'🧿 NEXUS ↗',demo_chat:'🤖 AI Чат ↗',
+  s1_title:'📊 Инсайты и Аналитика',s1_p:'NL-запросы с живыми данными федерации. Профессиональные графики, таблицы с сортировкой, тепловые карты.',
+  s1_c1_title:'Инсайты федерации',s1_c1_p:'Спросите «На сколько хватит казначейства?», «Какой хаб тормозит?», «Есть критические находки?» — типизированные ответы с severity и рекомендациями.',
+  s1_c2_title:'Панель аналитики',s1_c2_p:'Линейные графики (24ч тренд), столбчатые (per-hub), кольцевые (severity), календарь тепловой карты (90 дней аномалий), сортируемые таблицы с группировкой.',
+  s1_c3_title:'3D Созвездие',s1_c3_p:'Федерация как живое звёздное поле — хабы-узлы как пульсирующие сферы, линии связей, кольца аномалий. Интерактивная Three.js визуализация.',
+  s2_title:'🧿 NEXUS — Федеративный полигон',s2_p:'Выберите capability из каталога, введите JSON, вызовите — и увидите маршрут, цену и верифицируемый результат.',
+  s2_c1_title:'Браузер capability',s2_c1_p:'Полный каталог всех capability федерации — названия, описания, цены, хабы-провайдеры. Выпадающий список с живым обновлением.',
+  s2_c2_title:'Ручной вызов',s2_c2_p:'Введите JSON, нажмите INVOKE, увидите результат. Маршрут показывает какой хаб обслужил запрос, цену и верифицируемое доказательство.',
+  s3_title:'🤖 AI Ассистент',s3_p:'Общайтесь с ассистентом LOGOS. Полный read-only доступ к хранилищу аналитики. Защита от prompt-инъекций. Мульти-провайдер. Голосовой ввод.',
+  s3_c1_title:'Мульти-провайдер LLM',s3_c1_p:'DeepSeek V4 Pro (по умолчанию), Anthropic Claude, OpenAI, Ollama, LM Studio — те же пресеты что у MOMUS.',
+  s3_c2_title:'Input Guard',s3_c2_p:'Детерминированный фильтр prompt-инъекций в стиле Warden — блокирует извлечение промпта, переключение ролей, smuggling токенов до LLM.',
+  s4_title:'💰 Аналитика потребления',s4_p:'Измеренный объём расчётов за 24 часа, прогноз на 30 дней только при наличии измерения, цены capability по хабам и экспорт CSV. Отсутствующая телеметрия остаётся недоступной, а не нулевой.',
+};
+L.es={
+  nav_home:'Inicio',nav_analytics:'Analítica',nav_nexus:'NEXUS',nav_assistant:'AI Asistente',nav_consumption:'Consumo',
+  hero_title:'LOGOS',hero_tagline:'<strong>Un nodo. Cada insight.</strong><br/>Analítica de solo lectura de la federación AIMarket — proyección desde volumen de liquidación medido, precios del catálogo, anomalías por z-score móvil, insights con Metis y asistente protegido contra inyección.',
+  hero_cta_live:'🟢 Demo en vivo',hero_cta_docs:'Documentación ↗',hero_sub:'Parte del <a href="https://modeldev.modelmarket.dev" target="_blank">ecosistema AICOM</a> · <a href="https://github.com/alexar76/aicom">monorepo</a> · MIT',
+  demo_title:'🚀 Pruébalo ahora',demo_text:'logos.modelmarket.dev está en vivo. Pregunta por la federación, explora capabilities vía NEXUS, revisa el volumen de liquidación medido y los precios del catálogo o conversa con el asistente AI.',
+  demo_dashboard:'📊 Panel ↗',demo_nexus:'🧿 NEXUS ↗',demo_chat:'🤖 AI Chat ↗',
+  s1_title:'📊 Insights y Analítica',s1_p:'Consultas en lenguaje natural respondidas con datos vivos de la federación. Gráficos profesionales, tablas ordenables, mapas de calor.',
+  s1_c1_title:'Insights de la federación',s1_c1_p:'Pregunta "¿Cuánto durará la Tesorería?", "¿Qué hub está lento?", "¿Hay hallazgos críticos?" — respuestas tipadas con severidad, fuentes y recomendaciones.',
+  s1_c2_title:'Panel de analítica',s1_c2_p:'Gráficos de líneas (tendencia 24h), barras (por hub), anillos (severidad), calendario heatmap (90 días de anomalías), tablas ordenables y agrupables.',
+  s1_c3_title:'Constelación 3D',s1_c3_p:'La federación como un campo de estrellas viviente — hubs como esferas pulsantes, líneas de conexión, anillos de anomalías. Visualización interactiva Three.js.',
+  s2_title:'🧿 NEXUS — Parque de juegos federado',s2_p:'Selecciona cualquier capability del catálogo, escribe JSON, invoca — y ve la traza de ruteo, precio y resultado verificable.',
+  s2_c1_title:'Navegador de capabilities',s2_c1_p:'Catálogo completo de cada capability en la federación — nombres, descripciones, precios, hubs proveedores. Selector desplegable con actualización en vivo.',
+  s2_c2_title:'Invocación manual',s2_c2_p:'Escribe JSON, presiona INVOKE, ve el resultado. La traza de ruteo muestra qué hub sirvió la solicitud, el precio cobrado y la prueba verificable.',
+  s3_title:'🤖 Asistente AI',s3_p:'Chatea con el asistente LOGOS. Acceso completo de solo lectura al almacén analítico. Protegido contra prompt-injection. Multi-proveedor LLM. Entrada por voz.',
+  s3_c1_title:'LLM multi-proveedor',s3_c1_p:'DeepSeek V4 Pro (predeterminado), Anthropic Claude, OpenAI, Ollama, LM Studio — los mismos presets que MOMUS.',
+  s3_c2_title:'Input Guard',s3_c2_p:'Filtro determinista anti prompt-injection estilo Warden — bloquea extracción de prompt, cambio de rol, smuggling de tokens antes de llegar al LLM.',
+  s4_title:'💰 Analítica de consumo',s4_p:'Volumen de liquidación medido durante 24 horas, proyección a 30 días solo cuando existe esa medición, precios por hub y exportación CSV. La telemetría ausente queda no disponible, nunca en cero.',
+};
+L.fr={
+  nav_home:'Accueil',nav_analytics:'Analytique',nav_nexus:'NEXUS',nav_assistant:'Assistant IA',nav_consumption:'Consommation',
+  hero_title:'LOGOS',hero_tagline:'<strong>Un nœud. Chaque constat.</strong><br/>Analytique en lecture seule de la fédération AIMarket — projection depuis le volume de règlement mesuré, prix du catalogue, anomalies par z-score glissant, analyses avec Metis et assistant protégé contre l\'injection.',
+  hero_cta_live:'🟢 Démo live',hero_cta_docs:'Documentation ↗',hero_sub:'Partie de l\'<a href="https://modeldev.modelmarket.dev" target="_blank">écosystème AICOM</a> · <a href="https://github.com/alexar76/aicom">monorepo</a> · MIT',
+  demo_title:'🚀 Essayez maintenant',demo_text:'logos.modelmarket.dev est en ligne. Interrogez la fédération, explorez les capabilities via NEXUS, vérifiez le volume de règlement mesuré et les prix du catalogue ou discutez avec l\'assistant IA.',
+  demo_dashboard:'📊 Tableau de bord ↗',demo_nexus:'🧿 NEXUS ↗',demo_chat:'🤖 Chat IA ↗',
+  s1_title:'📊 Constats et Analytique',s1_p:'Requêtes en langage naturel répondues avec les données live de la fédération. Graphiques professionnels, tableaux triables, cartes de chaleur.',
+  s1_c1_title:'Constats de la fédération',s1_c1_p:'Demandez "Combien de temps durera la trésorerie?", "Quel hub est lent?", "Y a-t-il des constats critiques?" — réponses typées avec sévérité, sources et recommandations.',
+  s1_c2_title:'Tableau de bord analytique',s1_c2_p:'Graphiques linéaires (tendance 24h), barres (par hub), anneaux (sévérité), calendrier heatmap (90 jours d\'anomalies), tableaux triables et groupables.',
+  s1_c3_title:'Constellation 3D',s1_c3_p:'La fédération comme un champ d\'étoiles vivant — hubs comme sphères pulsantes, lignes de connexion, anneaux d\'anomalies. Visualisation interactive Three.js.',
+  s2_title:'🧿 NEXUS — Terrain de jeu fédéré',s2_p:'Sélectionnez une capability du catalogue, écrivez du JSON, invoquez — et voyez la trace de routage, le prix et le résultat vérifiable.',
+  s2_c1_title:'Navigateur de capabilities',s2_c1_p:'Catalogue complet de chaque capability de la fédération — noms, descriptions, prix, hubs fournisseurs. Sélecteur déroulant avec actualisation en direct.',
+  s2_c2_title:'Invocation manuelle',s2_c2_p:'Écrivez du JSON, appuyez sur INVOKE, voyez le résultat. La trace de routage montre quel hub a servi la demande, le prix facturé et la preuve vérifiable.',
+  s3_title:'🤖 Assistant IA',s3_p:'Discutez avec l\'assistant LOGOS. Accès complet en lecture seule au stockage analytique. Protégé contre les injections de prompt. Multi-fournisseur LLM. Saisie vocale.',
+  s3_c1_title:'LLM multi-fournisseur',s3_c1_p:'DeepSeek V4 Pro (par défaut), Anthropic Claude, OpenAI, Ollama, LM Studio — les mêmes préréglages que MOMUS.',
+  s3_c2_title:'Input Guard',s3_c2_p:'Filtre déterministe anti-injection de prompt style Warden — bloque l\'extraction de prompt, le changement de rôle, le smuggling de jetons avant le LLM.',
+  s4_title:'💰 Analytique de consommation',s4_p:'Volume de règlement mesuré sur 24 heures, projection sur 30 jours uniquement si cette mesure existe, prix par hub et export CSV. Une télémétrie absente reste indisponible, jamais nulle.',
+};
+L.zh={
+  nav_home:'首页',nav_analytics:'分析',nav_nexus:'NEXUS',nav_assistant:'AI助手',nav_consumption:'消费',
+  hero_title:'LOGOS',hero_tagline:'<strong>一个节点，所有洞察。</strong><br/>AIMarket 联邦只读分析——仅基于实测结算交易额进行预测、目录定价、滚动 z-score 异常检测、Metis 辅助洞察，以及带提示注入防护的助手。',
+  hero_cta_live:'🟢 在线演示',hero_cta_docs:'文档 ↗',hero_sub:'<a href="https://modeldev.modelmarket.dev" target="_blank">AICOM生态系统</a>的一部分 · <a href="https://github.com/alexar76/aicom">monorepo</a> · MIT',
+  demo_title:'🚀 立即体验',demo_text:'logos.modelmarket.dev 在线运行。询问联邦相关问题，通过 NEXUS 探索能力，查看实测结算交易额与目录定价，或与 AI 助手聊天。',
+  demo_dashboard:'📊 仪表板 ↗',demo_nexus:'🧿 NEXUS ↗',demo_chat:'🤖 AI 聊天 ↗',
+  s1_title:'📊 洞察与分析',s1_p:'用联邦实时数据回答自然语言查询。专业图表、可排序表格、热力图。',
+  s1_c1_title:'联邦洞察',s1_c1_p:'问"国库还能维持多久？"、"哪个枢纽变慢了？"、"有严重发现吗？"——带严重程度、来源和建议的类型化回答。',
+  s1_c2_title:'分析仪表板',s1_c2_p:'折线图（24小时趋势）、柱状图（按枢纽）、环形图（严重程度）、热力图日历（90天异常）、可排序可分组的数据表。',
+  s1_c3_title:'3D星座',s1_c3_p:'联邦作为生动的星空——枢纽节点为脉动球体，连接线，异常环。交互式 Three.js 可视化。',
+  s2_title:'🧿 NEXUS — 联邦游乐场',s2_p:'从目录中选择任何能力，编写 JSON 输入，调用——查看路由跟踪、价格和可验证结果。',
+  s2_c1_title:'能力浏览器',s2_c1_p:'联邦中每个能力的完整目录——名称、描述、价格、提供者枢纽。带实时刷新的下拉选择器。',
+  s2_c2_title:'手动调用',s2_c2_p:'编写 JSON，按 INVOKE，查看结果。路由跟踪显示哪个枢纽提供了服务、收取的价格和可验证证明。',
+  s3_title:'🤖 AI 助手',s3_p:'与 LOGOS 助手聊天。对分析存储的完整只读访问。提示注入防护。多提供商 LLM 支持。语音输入。',
+  s3_c1_title:'多提供商 LLM',s3_c1_p:'DeepSeek V4 Pro（默认）、Anthropic Claude、OpenAI、Ollama、LM Studio——与 MOMUS 相同的命名预设。',
+  s3_c2_title:'输入守卫',s3_c2_p:'Warden 风格的确定性提示注入过滤器——在到达 LLM 之前阻止提示提取、角色切换、令牌走私。',
+  s4_title:'💰 消费分析',s4_p:'实测 24 小时结算交易额；仅在该测量存在时生成 30 天预测；按枢纽展示目录价格并支持 CSV 导出。缺失遥测显示为不可用，不会显示为零。',
+};
+Object.assign(L.ru,{
+  hero_kicker:'Аналитика федерации / live',scene_aria:'Интерактивная 3D-карта аналитики федерации LOGOS',scene_endpoints:'16 ЭНДПОИНТОВ',scene_telemetry:'ЖИВАЯ ТЕЛЕМЕТРИЯ',scene_insight:'СЛОЙ NL-ИНСАЙТОВ',scene_zscore:'СКОЛЬЗЯЩИЙ Z-SCORE',scene_anomaly:'МЕТОД АНОМАЛИЙ',scene_hint:'ТЯНИТЕ ДЛЯ ОРБИТЫ · КОЛЕСО ДЛЯ МАСШТАБА',
+  stat_views:'Разделов dashboard',stat_endpoints:'API-эндпоинтов',stat_languages:'Языков',stat_tests:'Тестов',stat_constellation:'Созвездие',link_insights:'Открыть инсайты ↗',link_analytics:'Открыть аналитику ↗',link_nexus:'Открыть NEXUS ↗',link_try:'Попробовать ↗',link_chat:'Открыть AI-чат ↗',footer_line:'<strong style="font-family:var(--head);letter-spacing:.08em">LOGOS</strong> — аналитический узел <a href="https://github.com/alexar76/aicom" target="_blank">открытой агентной экономики AICOM</a>',footer_stack:'MIT · Python 3.11+ · FastAPI · React · Three.js · 80 тестов · 16 API-эндпоинтов · 6 разделов dashboard'
+});
+Object.assign(L.es,{
+  hero_kicker:'Inteligencia federada / en vivo',scene_aria:'Mapa 3D interactivo de la analítica federada LOGOS',scene_endpoints:'16 ENDPOINTS',scene_telemetry:'TELEMETRÍA EN VIVO',scene_insight:'CAPA DE INSIGHTS NL',scene_zscore:'Z-SCORE MÓVIL',scene_anomaly:'MÉTODO DE ANOMALÍAS',scene_hint:'ARRASTRA PARA ORBITAR · RUEDA PARA ZOOM',
+  stat_views:'Vistas del panel',stat_endpoints:'Endpoints API',stat_languages:'Idiomas',stat_tests:'Pruebas',stat_constellation:'Constelación',link_insights:'Abrir insights ↗',link_analytics:'Abrir analítica ↗',link_nexus:'Abrir NEXUS ↗',link_try:'Probar ↗',link_chat:'Abrir chat IA ↗',footer_line:'<strong style="font-family:var(--head);letter-spacing:.08em">LOGOS</strong> — el nodo analítico de la <a href="https://github.com/alexar76/aicom" target="_blank">economía abierta de agentes AICOM</a>',footer_stack:'MIT · Python 3.11+ · FastAPI · React · Three.js · 80 pruebas · 16 endpoints API · 6 vistas del panel'
+});
+Object.assign(L.fr,{
+  hero_kicker:'Intelligence fédérée / en direct',scene_aria:'Carte 3D interactive de l’analytique fédérée LOGOS',scene_endpoints:'16 ENDPOINTS',scene_telemetry:'TÉLÉMÉTRIE EN DIRECT',scene_insight:'COUCHE D’ANALYSE NL',scene_zscore:'Z-SCORE GLISSANT',scene_anomaly:'MÉTHODE D’ANOMALIE',scene_hint:'GLISSER POUR ORBITER · MOLETTE POUR ZOOMER',
+  stat_views:'Vues du tableau',stat_endpoints:'Endpoints API',stat_languages:'Langues',stat_tests:'Tests',stat_constellation:'Constellation',link_insights:'Ouvrir les analyses ↗',link_analytics:'Ouvrir l’analytique ↗',link_nexus:'Ouvrir NEXUS ↗',link_try:'Essayer ↗',link_chat:'Ouvrir le chat IA ↗',footer_line:'<strong style="font-family:var(--head);letter-spacing:.08em">LOGOS</strong> — le nœud analytique de l’<a href="https://github.com/alexar76/aicom" target="_blank">économie ouverte d’agents AICOM</a>',footer_stack:'MIT · Python 3.11+ · FastAPI · React · Three.js · 80 tests · 16 endpoints API · 6 vues du tableau'
+});
+Object.assign(L.zh,{
+  hero_kicker:'联邦智能 / 在线',scene_aria:'LOGOS 联邦分析交互式 3D 地图',scene_endpoints:'16 个端点',scene_telemetry:'实时遥测',scene_insight:'自然语言洞察层',scene_zscore:'滚动 Z-SCORE',scene_anomaly:'异常检测方法',scene_hint:'拖动旋转 · 滚轮缩放',
+  stat_views:'仪表板视图',stat_endpoints:'API 端点',stat_languages:'语言',stat_tests:'测试',stat_constellation:'3D 星座',link_insights:'打开洞察 ↗',link_analytics:'打开分析 ↗',link_nexus:'打开 NEXUS ↗',link_try:'立即体验 ↗',link_chat:'打开 AI 聊天 ↗',footer_line:'<strong style="font-family:var(--head);letter-spacing:.08em">LOGOS</strong> — <a href="https://github.com/alexar76/aicom" target="_blank">AICOM 开放智能体经济</a>的分析节点',footer_stack:'MIT · Python 3.11+ · FastAPI · React · Three.js · 80 项测试 · 16 个 API 端点 · 6 个仪表板视图'
+});
+const defaults=new Map();
+document.querySelectorAll('[data-i18n],[data-i18n-html]').forEach(el=>defaults.set(el,el.hasAttribute('data-i18n-html')?el.innerHTML:el.textContent));
+const ariaDefaults=new Map();
+document.querySelectorAll('[data-i18n-aria]').forEach(el=>ariaDefaults.set(el,el.getAttribute('aria-label')||''));
+function applyLang(lang){
+  const d=L[lang]||{};
+  document.querySelectorAll('[data-i18n],[data-i18n-html]').forEach(el=>{
+    const k=el.getAttribute('data-i18n')||el.getAttribute('data-i18n-html');
+    const value=k&&d[k]?d[k]:defaults.get(el);
+    if(value!=null){if(el.hasAttribute('data-i18n-html'))el.innerHTML=value;else el.textContent=value;}
+  });
+  document.querySelectorAll('[data-i18n-aria]').forEach(el=>{const k=el.getAttribute('data-i18n-aria');el.setAttribute('aria-label',(k&&d[k])||ariaDefaults.get(el)||'');});
+  document.documentElement.lang=lang;
+}
+// Language switcher
+document.querySelectorAll('.lang-sw button').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    const lang=btn.getAttribute('data-lang');
+    document.querySelectorAll('.lang-sw button').forEach(b=>b.classList.remove('on'));
+    btn.classList.add('on');
+    localStorage.setItem('logos-landing-lang',lang);
+    applyLang(lang||'en');
+  });
+});
+// Restore saved language
+const saved=localStorage.getItem('logos-landing-lang')||
+  (['ru','es','fr','zh'].includes(navigator.language?.slice(0,2))?navigator.language.slice(0,2):'en');
+document.querySelectorAll('.lang-sw button').forEach(b=>b.classList.remove('on'));
+document.querySelector(`.lang-sw button[data-lang="${saved}"]`)?.classList.add('on');
+applyLang(saved);
+</script>
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.185.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.185.0/examples/jsm/"
+  }
+}
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+
+const canvas3d=document.getElementById('hero-galaxy');
+const host=document.getElementById('hero-visual');
+const mobile=matchMedia('(max-width:700px), (pointer:coarse)').matches;
+const reduced=matchMedia('(prefers-reduced-motion:reduce)').matches;
+
+try{
+  const renderer=new THREE.WebGLRenderer({canvas:canvas3d,alpha:true,antialias:true,powerPreference:'high-performance'});
+  renderer.setPixelRatio(Math.min(devicePixelRatio,mobile?1.35:1.8));
+  renderer.toneMapping=THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure=1.15;
+
+  const scene=new THREE.Scene();
+  const camera=new THREE.PerspectiveCamera(38,1,.1,80);
+  camera.position.set(0,.25,8.6);
+  const controls=new OrbitControls(camera,canvas3d);
+  controls.enableDamping=true;controls.dampingFactor=.055;controls.enablePan=false;
+  controls.minDistance=6;controls.maxDistance=11;controls.rotateSpeed=.55;
+  controls.autoRotate=!reduced;controls.autoRotateSpeed=.42;
+
+  scene.add(new THREE.AmbientLight(0x173053,1.15));
+  const cyanLight=new THREE.PointLight(0x38e0ff,55,24);cyanLight.position.set(4,4,5);scene.add(cyanLight);
+  const violetLight=new THREE.PointLight(0x7b5cff,42,20);violetLight.position.set(-5,-2,3);scene.add(violetLight);
+  const pinkLight=new THREE.PointLight(0xff5d8a,24,16);pinkLight.position.set(2,-4,-3);scene.add(pinkLight);
+
+  const system=new THREE.Group();system.rotation.set(-.12,0,.12);scene.add(system);
+
+  // LOGOS analytical core: layered, refractive geometry with a luminous kernel.
+  const shell=new THREE.Mesh(new THREE.IcosahedronGeometry(1.18,4),new THREE.MeshPhysicalMaterial({
+    color:0x102b56,emissive:0x0b83a9,emissiveIntensity:.34,metalness:.28,roughness:.12,
+    transmission:.32,thickness:1.5,transparent:true,opacity:.92,clearcoat:1,iridescence:1,
+    iridescenceIOR:1.35,iridescenceThicknessRange:[140,560]
+  }));system.add(shell);
+  const wire=new THREE.Mesh(new THREE.IcosahedronGeometry(1.23,2),new THREE.MeshBasicMaterial({
+    color:0x68ecff,wireframe:true,transparent:true,opacity:.13,blending:THREE.AdditiveBlending,depthWrite:false
+  }));system.add(wire);
+  const kernel=new THREE.Mesh(new THREE.OctahedronGeometry(.48,2),new THREE.MeshBasicMaterial({
+    color:0xdafaff,transparent:true,opacity:.72,blending:THREE.AdditiveBlending,depthWrite:false
+  }));system.add(kernel);
+
+  // Nested data-orbits make the scene read as a real federation, not a decorative globe.
+  const ringGroup=new THREE.Group();system.add(ringGroup);
+  const ringData=[
+    [2.05,.015,0x38e0ff,.72,.18,.18],[2.48,.012,0x7b5cff,-.5,.78,.24],[2.9,.009,0xff5d8a,.48,-.3,.85],
+    [3.25,.007,0x38ffa6,1.08,.42,-.25]
+  ];
+  ringData.forEach(([radius,tube,color,rx,ry,rz])=>{
+    const ring=new THREE.Mesh(new THREE.TorusGeometry(radius,tube,8,180),new THREE.MeshBasicMaterial({color,transparent:true,opacity:.46,blending:THREE.AdditiveBlending,depthWrite:false}));
+    ring.rotation.set(rx,ry,rz);ringGroup.add(ring);
+  });
+
+  const hubs=[];
+  const hubColors=[0x38e0ff,0x7b5cff,0x38ffa6,0xff5d8a,0xffcc4d,0x38e0ff,0x7b5cff,0x38ffa6];
+  for(let i=0;i<8;i++){
+    const angle=i/8*Math.PI*2+(i%2)*.23,radius=2.2+(i%3)*.42;
+    const pos=new THREE.Vector3(Math.cos(angle)*radius,Math.sin(angle*1.7)*.82,Math.sin(angle)*radius);
+    const group=new THREE.Group();group.position.copy(pos);
+    const color=hubColors[i];
+    group.add(new THREE.Mesh(new THREE.SphereGeometry(.105+(i%3)*.022,18,18),new THREE.MeshStandardMaterial({color,emissive:color,emissiveIntensity:2.2,roughness:.22,metalness:.35})));
+    const halo=new THREE.Mesh(new THREE.SphereGeometry(.22,16,16),new THREE.MeshBasicMaterial({color,transparent:true,opacity:.08,blending:THREE.AdditiveBlending,depthWrite:false}));group.add(halo);
+    const anomaly=new THREE.Mesh(new THREE.TorusGeometry(.25,.009,6,48),new THREE.MeshBasicMaterial({color,transparent:true,opacity:i===3?.9:.2,blending:THREE.AdditiveBlending,depthWrite:false}));
+    anomaly.rotation.x=Math.PI/2;group.add(anomaly);system.add(group);
+    hubs.push({group,halo,anomaly,phase:i*.83,color});
+  }
+
+  // Curved routing paths plus packets travelling from every hub to LOGOS.
+  const routes=[];
+  hubs.forEach((hub,i)=>{
+    const start=hub.group.position.clone(),mid=start.clone().multiplyScalar(.53);
+    mid.y+=(i%2?.55:-.55);
+    const curve=new THREE.QuadraticBezierCurve3(start,mid,new THREE.Vector3());
+    const line=new THREE.Line(new THREE.BufferGeometry().setFromPoints(curve.getPoints(40)),new THREE.LineBasicMaterial({color:hub.color,transparent:true,opacity:.19,blending:THREE.AdditiveBlending,depthWrite:false}));system.add(line);
+    const packet=new THREE.Mesh(new THREE.SphereGeometry(.035,8,8),new THREE.MeshBasicMaterial({color:hub.color,blending:THREE.AdditiveBlending,depthWrite:false}));system.add(packet);
+    routes.push({curve,packet,phase:i/8});
+  });
+
+  // Volumetric point cloud around the federation.
+  const count=mobile?480:900,positions=new Float32Array(count*3),colors=new Float32Array(count*3);
+  const palette=[new THREE.Color(0x38e0ff),new THREE.Color(0x7b5cff),new THREE.Color(0xcfe3ff)];
+  for(let i=0;i<count;i++){
+    const r=3.6+Math.random()*3.8,theta=Math.random()*Math.PI*2,phi=Math.acos(2*Math.random()-1);
+    positions[i*3]=r*Math.sin(phi)*Math.cos(theta);positions[i*3+1]=r*Math.cos(phi)*.62;positions[i*3+2]=r*Math.sin(phi)*Math.sin(theta);
+    const c=palette[(Math.random()*palette.length)|0];colors.set([c.r,c.g,c.b],i*3);
+  }
+  const dustGeo=new THREE.BufferGeometry();dustGeo.setAttribute('position',new THREE.BufferAttribute(positions,3));dustGeo.setAttribute('color',new THREE.BufferAttribute(colors,3));
+  const dust=new THREE.Points(dustGeo,new THREE.PointsMaterial({size:.026,vertexColors:true,transparent:true,opacity:.55,blending:THREE.AdditiveBlending,depthWrite:false}));system.add(dust);
+
+  const composer=new EffectComposer(renderer);composer.addPass(new RenderPass(scene,camera));
+  const bloom=new UnrealBloomPass(new THREE.Vector2(1,1),.72,.65,.5);composer.addPass(bloom);
+  const clock=new THREE.Clock();
+
+  function resize3d(){const w=Math.max(1,host.clientWidth),h=Math.max(1,host.clientHeight);renderer.setSize(w,h,false);composer.setSize(w,h);camera.aspect=w/h;camera.fov=w/h<.9?48:38;camera.updateProjectionMatrix()}
+  new ResizeObserver(resize3d).observe(host);resize3d();
+
+  function render(){
+    const t=clock.getElapsedTime();
+    if(!reduced){shell.rotation.y=t*.13;shell.rotation.x=Math.sin(t*.27)*.08;wire.rotation.set(-t*.07,t*.11,t*.035);kernel.rotation.set(t*.28,-t*.35,t*.17);ringGroup.rotation.y=t*.045;dust.rotation.y=-t*.018}
+    const pulse=1+Math.sin(t*2.1)*.035;kernel.scale.setScalar(pulse);
+    hubs.forEach((h,i)=>{const p=1+Math.sin(t*2.4+h.phase)*.14;h.halo.scale.setScalar(p);h.anomaly.rotation.z=t*(i===3?.85:.16)+h.phase});
+    routes.forEach((r,i)=>r.packet.position.copy(r.curve.getPoint((t*(.16+(i%3)*.018)+r.phase)%1)));
+    controls.update();composer.render();requestAnimationFrame(render);
+  }
+  render();
+}catch(err){
+  host.classList.add('webgl-fallback');
+  console.warn('LOGOS 3D scene unavailable',err);
+}
+</script>
+</body>
+</html>
