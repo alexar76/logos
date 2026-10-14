@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>LOGOS — Federation Analytics Engine</title>
+<meta name="description" content="LOGOS — read-only federation snapshots, measured settlement analytics, rolling z-score anomalies, cross-source insights, and a guarded AI assistant."/>
+<meta property="og:type" content="website"/>
+<meta property="og:title" content="LOGOS — Federation Analytics Engine"/>
+<meta property="og:description" content="One node. Every insight. AI-powered analytics over the entire AIMarket federation."/>
+<meta property="og:url" content="https://logos.modelmarket.dev/landing/"/>
+<link rel="canonical" href="https://logos.modelmarket.dev/landing/"/>
+<link rel="icon" href="logos.svg" type="image/svg+xml"/>
+<meta name="theme-color" content="#0d1418"/>
+
+<link href="fonts/workspace.css" rel="stylesheet" />
+
+<link href="landing.css" rel="stylesheet"/>
+</head>
+<body>
+<a class="skip-link" href="#main" data-i18n="skip">Skip to content</a>
+
+<!-- NAV -->
+<nav aria-label="Primary navigation" data-i18n-aria="nav_aria">
+  <div class="wrap row">
+    <a class="brand" href="#main"><span class="brand-symbol" aria-hidden="true">λ</span><span>LOGOS<small>Observatory</small></span></a>
+    <div class="nav-links">
+      <a href="#main" class="on" data-i18n="nav_home">Home</a>
+      <a href="#analytics" data-i18n="nav_analytics">Analytics</a>
+      <a href="#nexus" data-i18n="nav_nexus">NEXUS</a>
+      <a href="#assistant" data-i18n="nav_assistant">AI Assistant</a>
+      <a href="#consumption" data-i18n="nav_consumption">Consumption</a>
+    </div>
+    <div class="lang-sw">
+      <button class="on" data-lang="en">EN</button>
+      <button data-lang="ru">RU</button>
+      <button data-lang="es">ES</button>
+      <button data-lang="fr">FR</button>
+      <button data-lang="zh">中文</button>
+    </div>
+  </div>
+</nav>
+
+<main id="main">
+<!-- HERO -->
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div class="hero-copy">
+      <div class="hero-kicker" data-i18n="hero_kicker">Federation intelligence / live</div>
+      <h1 data-i18n="hero_title">One node.
+Every insight.</h1>
+      <p class="tagline" data-i18n-html="hero_tagline">Understand the agents, services and activity across your economy. LOGOS turns federation data into a clear view of what is working, what is changing, and what needs your attention.</p>
+      <div class="cta">
+        <a class="btn btn-live" href="https://logos.modelmarket.dev" target="_blank" rel="noopener"><span data-i18n="hero_cta_live">Open LOGOS</span><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14 M13 6l6 6-6 6"/></svg></a>
+        <a class="btn btn-g" href="https://github.com/alexar76/logos" target="_blank" rel="noopener">GitHub<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m8 7-5 5 5 5 M16 7l5 5-5 5 M14 4l-4 16"/></svg></a>
+        <a class="btn btn-g" href="https://github.com/alexar76/logos#readme" target="_blank" rel="noopener"><span data-i18n="hero_cta_docs">Documentation</span><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v16 M3 4h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5v15h-5a4 4 0 0 0-4 2 4 4 0 0 0-4-2H3V4z"/></svg></a>
+      </div>
+      <p class="hero-meta" data-i18n-html="hero_sub">Part of the <a href="https://ecosystem.modelmarket.dev" target="_blank" rel="noopener">AICOM ecosystem</a> · <a href="https://github.com/alexar76/aicom">monorepo</a> · MIT</p>
+    </div>
+    <div class="hero-visual" id="hero-visual">
+      <canvas id="hero-galaxy" tabindex="0" aria-label="Interactive 3D map of the LOGOS analytics federation" data-i18n-aria="scene_aria"></canvas>
+      <div class="scene-label a"><b data-i18n="scene_endpoints">CONNECTED SOURCES</b><span data-i18n="scene_telemetry">FEDERATION MODEL</span></div>
+      <div class="scene-label b"><b>METIS COUNCIL</b><span data-i18n="scene_insight">NL INSIGHT LAYER</span></div>
+      <div class="scene-label c"><b data-i18n="scene_zscore">ROLLING Z-SCORE</b><span data-i18n="scene_anomaly">ANOMALY METHOD</span></div>
+      <div class="scene-fallback" data-i18n="scene_fallback">Explore the live network in the dashboard. Interactive 3D is unavailable in this browser.</div>
+      <div class="scene-hint" data-i18n="scene_hint">DRAG TO ORBIT · SCROLL TO ZOOM</div>
+    </div>
+  </div>
+</section>
+
+<!-- STATS BAR -->
+<section>
+  <div class="wrap">
+    <div class="stats">
+      <div class="stat"><div class="val">6</div><div class="lbl" data-i18n="stat_views">Dashboard Views</div></div>
+      <div class="stat"><div class="val">Read-only</div><div class="lbl" data-i18n="stat_endpoints">By design</div></div>
+      <div class="stat"><div class="val">5</div><div class="lbl" data-i18n="stat_languages">Languages</div></div>
+      <div class="stat"><div class="val">MIT</div><div class="lbl" data-i18n="stat_tests">Open source</div></div>
+      <div class="stat"><div class="val">3D</div><div class="lbl" data-i18n="stat_constellation">Constellation</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- DEMO CTA -->
+<section class="demo-bar">
+  <div class="wrap">
+    <div class="demo-card">
+      <div class="demo-copy"><h2><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg><span data-i18n="demo_title">Try it now</span></h2>
+      <p data-i18n="demo_text">logos.modelmarket.dev is live. Ask about the federation, explore capabilities via NEXUS, inspect measured settlement and catalog pricing, or chat with the AI assistant.</p>
+      </div>
+      <div class="demo-links">
+        <a class="btn btn-p" href="https://logos.modelmarket.dev" target="_blank" rel="noopener"><span data-i18n="demo_dashboard">Dashboard</span><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V10 M10 20V4 M16 20v-7 M22 20H2"/></svg></a>
+        <a class="btn btn-g" href="https://logos.modelmarket.dev" target="_blank" rel="noopener"><span data-i18n="demo_nexus">NEXUS</span><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 3 8l9 5 9-5-9-5z M3 12l9 5 9-5 M3 16l9 5 9-5"/></svg></a>
+        <a class="btn btn-g" href="https://logos.modelmarket.dev" target="_blank" rel="noopener"><span data-i18n="demo_chat">AI Chat</span><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h16v12H9l-5 4V4z M8 8h8 M8 12h5"/></svg></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- INSIGHTS + ANALYTICS -->
+<section id="analytics">
+  <div class="wrap">
+    <div class="section-head"><span class="section-number">01 / LOGOS</span><h2><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V10 M10 20V4 M16 20v-7 M22 20H2"/></svg><span data-i18n="s1_title">Insights & Analytics</span></h2><p data-i18n="s1_p">Natural-language queries answered from live federation data. Professional charts, sortable tables, heatmaps.</p></div>
+    <div class="grid">
+      <div class="card">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg>
+        <h3 data-i18n="s1_c1_title">Federation Insights</h3>
+        <p data-i18n="s1_c1_p">Ask "How long will Treasury last?", "Which hub is slow?", "Any critical findings?" — typed answers with severity, sources, and recommendations.</p>
+        <div class="tag-row"><span class="tag">economy</span><span class="tag">security</span><span class="tag">latency</span><span class="tag">reputation</span></div>
+        <div class="links"><a href="https://logos.modelmarket.dev" target="_blank" rel="noopener"><span data-i18n="link_insights">Open Insights</span><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14 M13 6l6 6-6 6"/></svg></a></div>
+      </div>
+      <div class="card">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V10 M10 20V4 M16 20v-7 M22 20H2"/></svg>
+        <h3 data-i18n="s1_c2_title">Analytics Dashboard</h3>
+        <p data-i18n="s1_c2_p">Line charts (24h trends), bar charts (per-hub), donut charts (severity), heatmap calendar (90-day anomaly activity), sortable+groupable data tables.</p>
+        <div class="tag-row"><span class="tag">line</span><span class="tag">bar</span><span class="tag">donut</span><span class="tag">heatmap</span></div>
+        <div class="links"><a href="https://logos.modelmarket.dev" target="_blank" rel="noopener"><span data-i18n="link_analytics">Open Analytics</span><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14 M13 6l6 6-6 6"/></svg></a></div>
+      </div>
+      <div class="card">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0 M3 12h18 M12 3c5 5 5 13 0 18-5-5-5-13 0-18"/></svg>
+        <h3 data-i18n="s1_c3_title">3D Constellation</h3>
+        <p data-i18n="s1_c3_p">The federation as a living starfield — hub nodes as pulsing orbs, connection trails, anomaly rings. Interactive Three.js visualization.</p>
+        <div class="tag-row"><span class="tag">three.js</span><span class="tag">3D</span><span class="tag">WebGL</span></div>
+        <div class="links"><a href="https://logos.modelmarket.dev" target="_blank" rel="noopener"><span data-i18n="link_insights">Open Insights</span><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14 M13 6l6 6-6 6"/></svg></a></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- NEXUS -->
+<section id="nexus">
+  <div class="wrap">
+    <div class="section-head"><span class="section-number">02 / LOGOS</span><h2><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 3 8l9 5 9-5-9-5z M3 12l9 5 9-5 M3 16l9 5 9-5"/></svg><span data-i18n="s2_title">NEXUS — Federation Playground</span></h2><p data-i18n="s2_p">Select any capability from the catalog, craft JSON input, invoke — and see the routing trace, price, and verifiable result.</p></div>
+    <div class="grid">
+      <div class="card">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 3 8l9 5 9-5-9-5z M3 12l9 5 9-5 M3 16l9 5 9-5"/></svg>
+        <h3 data-i18n="s2_c1_title">Capability Browser</h3>
+        <p data-i18n="s2_c1_p">Full catalog of every capability across the federation — names, descriptions, prices, provider hubs. Drop-down selector with live refresh.</p>
+        <div class="links"><a href="https://logos.modelmarket.dev" target="_blank" rel="noopener"><span data-i18n="link_nexus">Open NEXUS</span><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14 M13 6l6 6-6 6"/></svg></a></div>
+      </div>
+      <div class="card">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m8 7-5 5 5 5 M16 7l5 5-5 5 M14 4l-4 16"/></svg>
+        <h3 data-i18n="s2_c2_title">Manual Invoke</h3>
+        <p data-i18n="s2_c2_p">Craft JSON input, hit INVOKE, and see the result. Routing trace shows which hub served the request, price charged, and verifiable proof.</p>
+        <div class="links"><a href="https://logos.modelmarket.dev" target="_blank" rel="noopener"><span data-i18n="link_try">Try it</span><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14 M13 6l6 6-6 6"/></svg></a></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- AI ASSISTANT -->
+<section id="assistant">
+  <div class="wrap">
+    <div class="section-head"><span class="section-number">03 / LOGOS</span><h2><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h16v12H9l-5 4V4z M8 8h8 M8 12h5"/></svg><span data-i18n="s3_title">AI Assistant</span></h2><p data-i18n="s3_p">Chat with the LOGOS assistant. Full read-only access to the analytics store. Prompt-injection guarded. Multi-provider LLM support. Voice input.</p></div>
+    <div class="grid">
+      <div class="card">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h16v12H9l-5 4V4z M8 8h8 M8 12h5"/></svg>
+        <h3 data-i18n="s3_c1_title">Multi-Provider LLM</h3>
+        <p data-i18n="s3_c1_p">DeepSeek V4 Pro (default), Anthropic Claude, OpenAI, Ollama, LM Studio — same named presets as MOMUS. Switch provider, model, base URL via env vars.</p>
+        <div class="tag-row"><span class="tag">deepseek</span><span class="tag">claude</span><span class="tag">openai</span><span class="tag">ollama</span></div>
+        <div class="links"><a href="https://github.com/alexar76/logos" target="_blank" rel="noopener">GitHub</a></div>
+      </div>
+      <div class="card">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 8 3v5c0 5-4 8-8 10-4-2-8-5-8-10V6l8-3z m-4 9 3 3 5-6"/></svg>
+        <h3 data-i18n="s3_c2_title">Input Guard</h3>
+        <p data-i18n="s3_c2_p">Warden-style deterministic prompt-injection filter — blocks prompt extraction, role-switching, token smuggling, and delimiter injection before reaching the LLM.</p>
+        <div class="tag-row"><span class="tag">prompt-injection</span><span class="tag">deterministic</span></div>
+        <div class="links"><a href="https://logos.modelmarket.dev" target="_blank" rel="noopener"><span data-i18n="link_chat">Open AI Chat</span><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14 M13 6l6 6-6 6"/></svg></a></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONSUMPTION -->
+<section id="consumption">
+  <div class="wrap">
+    <div class="section-head"><span class="section-number">04 / LOGOS</span><h2><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16v14H4z M7 7V3h10v4 M4 12h16 M15 16h2"/></svg><span data-i18n="s4_title">Consumption Tracking</span></h2><p data-i18n="s4_p">Measured 24-hour settlement volume, 30-day projection only when that measurement exists, catalog pricing by hub, and CSV export. Missing telemetry remains unavailable—not zero.</p></div>
+  </div>
+</section>
+
+</main>
+<footer>
+  <div class="wrap">
+    <div data-i18n-html="footer_line"><strong style="font-family:var(--head);letter-spacing:.08em">LOGOS</strong> — the analytical brain of the <a href="https://ecosystem.modelmarket.dev/" target="_blank" rel="noopener">AICOM open agent economy</a></div>
+    <span data-i18n="footer_stack">MIT · Python 3.11+ · FastAPI · React · Three.js · 6 dashboard views</span>
+  </div>
+</footer>
+
+<script>
+// ── i18n (5 languages) ──
+const L={en:{},ru:{},es:{},fr:{},zh:{}};
+// EN = defaults in HTML data-i18n attributes
+L.ru={
+  nav_home:'Главная',nav_analytics:'Аналитика',nav_nexus:'NEXUS',nav_assistant:'AI Ассистент',nav_consumption:'Расходы',
+  hero_title:'LOGOS',hero_tagline:'<strong>Один узел. Все инсайты.</strong><br/>Аналитика федерации AIMarket только для чтения — прогноз только из измеренного объёма расчётов, цены каталога, аномалии по скользящему z-score, инсайты с Metis и защищённый от prompt-инъекций ассистент.',
+  hero_cta_live:'Живое демо',hero_cta_docs:'Документация',hero_sub:'Часть <a href="https://ecosystem.modelmarket.dev" target="_blank" rel="noopener">экосистемы AICOM</a> · <a href="https://github.com/alexar76/aicom">монорепо</a> · MIT',
+  demo_title:'Попробуйте сейчас',demo_text:'logos.modelmarket.dev работает. Задайте вопрос о федерации, исследуйте capabilities через NEXUS, проверьте измеренный объём расчётов и цены каталога или пообщайтесь с AI-ассистентом.',
+  demo_dashboard:'Панель',demo_nexus:'NEXUS',demo_chat:'AI Чат',
+  s1_title:'Инсайты и Аналитика',s1_p:'NL-запросы с живыми данными федерации. Профессиональные графики, таблицы с сортировкой, тепловые карты.',
+  s1_c1_title:'Инсайты федерации',s1_c1_p:'Спросите «На сколько хватит казначейства?», «Какой хаб тормозит?», «Есть критические находки?» — типизированные ответы с severity и рекомендациями.',
+  s1_c2_title:'Панель аналитики',s1_c2_p:'Линейные графики (24ч тренд), столбчатые (per-hub), кольцевые (severity), календарь тепловой карты (90 дней аномалий), сортируемые таблицы с группировкой.',
+  s1_c3_title:'3D Созвездие',s1_c3_p:'Федерация как живое звёздное поле — хабы-узлы как пульсирующие сферы, линии связей, кольца аномалий. Интерактивная Three.js визуализация.',
+  s2_title:'NEXUS — Федеративный полигон',s2_p:'Выберите capability из каталога, введите JSON, вызовите — и увидите маршрут, цену и верифицируемый результат.',
+  s2_c1_title:'Браузер capability',s2_c1_p:'Полный каталог всех capability федерации — названия, описания, цены, хабы-провайдеры. Выпадающий список с живым обновлением.',
+  s2_c2_title:'Ручной вызов',s2_c2_p:'Введите JSON, нажмите INVOKE, увидите результат. Маршрут показывает какой хаб обслужил запрос, цену и верифицируемое доказательство.',
+  s3_title:'AI Ассистент',s3_p:'Общайтесь с ассистентом LOGOS. Полный read-only доступ к хранилищу аналитики. Защита от prompt-инъекций. Мульти-провайдер. Голосовой ввод.',
+  s3_c1_title:'Мульти-провайдер LLM',s3_c1_p:'DeepSeek V4 Pro (по умолчанию), Anthropic Claude, OpenAI, Ollama, LM Studio — те же пресеты что у MOMUS.',
+  s3_c2_title:'Input Guard',s3_c2_p:'Детерминированный фильтр prompt-инъекций в стиле Warden — блокирует извлечение промпта, переключение ролей, smuggling токенов до LLM.',
+  s4_title:'Аналитика потребления',s4_p:'Измеренный объём расчётов за 24 часа, прогноз на 30 дней только при наличии измерения, цены capability по хабам и экспорт CSV. Отсутствующая телеметрия остаётся недоступной, а не нулевой.',
+};
+L.es={
+  nav_home:'Inicio',nav_analytics:'Analítica',nav_nexus:'NEXUS',nav_assistant:'AI Asistente',nav_consumption:'Consumo',
+  hero_title:'LOGOS',hero_tagline:'<strong>Un nodo. Cada insight.</strong><br/>Analítica de solo lectura de la federación AIMarket — proyección desde volumen de liquidación medido, precios del catálogo, anomalías por z-score móvil, insights con Metis y asistente protegido contra inyección.',
+  hero_cta_live:'Demo en vivo',hero_cta_docs:'Documentación',hero_sub:'Parte del <a href="https://ecosystem.modelmarket.dev" target="_blank" rel="noopener">ecosistema AICOM</a> · <a href="https://github.com/alexar76/aicom">monorepo</a> · MIT',
+  demo_title:'Pruébalo ahora',demo_text:'logos.modelmarket.dev está en vivo. Pregunta por la federación, explora capabilities vía NEXUS, revisa el volumen de liquidación medido y los precios del catálogo o conversa con el asistente AI.',
+  demo_dashboard:'Panel',demo_nexus:'NEXUS',demo_chat:'AI Chat',
+  s1_title:'Insights y Analítica',s1_p:'Consultas en lenguaje natural respondidas con datos vivos de la federación. Gráficos profesionales, tablas ordenables, mapas de calor.',
+  s1_c1_title:'Insights de la federación',s1_c1_p:'Pregunta "¿Cuánto durará la Tesorería?", "¿Qué hub está lento?", "¿Hay hallazgos críticos?" — respuestas tipadas con severidad, fuentes y recomendaciones.',
+  s1_c2_title:'Panel de analítica',s1_c2_p:'Gráficos de líneas (tendencia 24h), barras (por hub), anillos (severidad), calendario heatmap (90 días de anomalías), tablas ordenables y agrupables.',
+  s1_c3_title:'Constelación 3D',s1_c3_p:'La federación como un campo de estrellas viviente — hubs como esferas pulsantes, líneas de conexión, anillos de anomalías. Visualización interactiva Three.js.',
+  s2_title:'NEXUS — Parque de juegos federado',s2_p:'Selecciona cualquier capability del catálogo, escribe JSON, invoca — y ve la traza de ruteo, precio y resultado verificable.',
+  s2_c1_title:'Navegador de capabilities',s2_c1_p:'Catálogo completo de cada capability en la federación — nombres, descripciones, precios, hubs proveedores. Selector desplegable con actualización en vivo.',
+  s2_c2_title:'Invocación manual',s2_c2_p:'Escribe JSON, presiona INVOKE, ve el resultado. La traza de ruteo muestra qué hub sirvió la solicitud, el precio cobrado y la prueba verificable.',
+  s3_title:'Asistente AI',s3_p:'Chatea con el asistente LOGOS. Acceso completo de solo lectura al almacén analítico. Protegido contra prompt-injection. Multi-proveedor LLM. Entrada por voz.',
+  s3_c1_title:'LLM multi-proveedor',s3_c1_p:'DeepSeek V4 Pro (predeterminado), Anthropic Claude, OpenAI, Ollama, LM Studio — los mismos presets que MOMUS.',
+  s3_c2_title:'Input Guard',s3_c2_p:'Filtro determinista anti prompt-injection estilo Warden — bloquea extracción de prompt, cambio de rol, smuggling de tokens antes de llegar al LLM.',
+  s4_title:'Analítica de consumo',s4_p:'Volumen de liquidación medido durante 24 horas, proyección a 30 días solo cuando existe esa medición, precios por hub y exportación CSV. La telemetría ausente queda no disponible, nunca en cero.',
+};
+L.fr={
+  nav_home:'Accueil',nav_analytics:'Analytique',nav_nexus:'NEXUS',nav_assistant:'Assistant IA',nav_consumption:'Consommation',
+  hero_title:'LOGOS',hero_tagline:'<strong>Un nœud. Chaque constat.</strong><br/>Analytique en lecture seule de la fédération AIMarket — projection depuis le volume de règlement mesuré, prix du catalogue, anomalies par z-score glissant, analyses avec Metis et assistant protégé contre l\'injection.',
+  hero_cta_live:'Démo live',hero_cta_docs:'Documentation',hero_sub:'Partie de l\'<a href="https://ecosystem.modelmarket.dev" target="_blank" rel="noopener">écosystème AICOM</a> · <a href="https://github.com/alexar76/aicom">monorepo</a> · MIT',
+  demo_title:'Essayez maintenant',demo_text:'logos.modelmarket.dev est en ligne. Interrogez la fédération, explorez les capabilities via NEXUS, vérifiez le volume de règlement mesuré et les prix du catalogue ou discutez avec l\'assistant IA.',
+  demo_dashboard:'Tableau de bord',demo_nexus:'NEXUS',demo_chat:'Chat IA',
+  s1_title:'Constats et Analytique',s1_p:'Requêtes en langage naturel répondues avec les données live de la fédération. Graphiques professionnels, tableaux triables, cartes de chaleur.',
+  s1_c1_title:'Constats de la fédération',s1_c1_p:'Demandez "Combien de temps durera la trésorerie?", "Quel hub est lent?", "Y a-t-il des constats critiques?" — réponses typées avec sévérité, sources et recommandations.',
+  s1_c2_title:'Tableau de bord analytique',s1_c2_p:'Graphiques linéaires (tendance 24h), barres (par hub), anneaux (sévérité), calendrier heatmap (90 jours d\'anomalies), tableaux triables et groupables.',
+  s1_c3_title:'Constellation 3D',s1_c3_p:'La fédération comme un champ d\'étoiles vivant — hubs comme sphères pulsantes, lignes de connexion, anneaux d\'anomalies. Visualisation interactive Three.js.',
+  s2_title:'NEXUS — Terrain de jeu fédéré',s2_p:'Sélectionnez une capability du catalogue, écrivez du JSON, invoquez — et voyez la trace de routage, le prix et le résultat vérifiable.',
+  s2_c1_title:'Navigateur de capabilities',s2_c1_p:'Catalogue complet de chaque capability de la fédération — noms, descriptions, prix, hubs fournisseurs. Sélecteur déroulant avec actualisation en direct.',
+  s2_c2_title:'Invocation manuelle',s2_c2_p:'Écrivez du JSON, appuyez sur INVOKE, voyez le résultat. La trace de routage montre quel hub a servi la demande, le prix facturé et la preuve vérifiable.',
+  s3_title:'Assistant IA',s3_p:'Discutez avec l\'assistant LOGOS. Accès complet en lecture seule au stockage analytique. Protégé contre les injections de prompt. Multi-fournisseur LLM. Saisie vocale.',
+  s3_c1_title:'LLM multi-fournisseur',s3_c1_p:'DeepSeek V4 Pro (par défaut), Anthropic Claude, OpenAI, Ollama, LM Studio — les mêmes préréglages que MOMUS.',
+  s3_c2_title:'Input Guard',s3_c2_p:'Filtre déterministe anti-injection de prompt style Warden — bloque l\'extraction de prompt, le changement de rôle, le smuggling de jetons avant le LLM.',
+  s4_title:'Analytique de consommation',s4_p:'Volume de règlement mesuré sur 24 heures, projection sur 30 jours uniquement si cette mesure existe, prix par hub et export CSV. Une télémétrie absente reste indisponible, jamais nulle.',
+};
+L.zh={
+  nav_home:'首页',nav_analytics:'分析',nav_nexus:'NEXUS',nav_assistant:'AI助手',nav_consumption:'消费',
+  hero_title:'LOGOS',hero_tagline:'<strong>一个节点，所有洞察。</strong><br/>AIMarket 联邦只读分析——仅基于实测结算交易额进行预测、目录定价、滚动 z-score 异常检测、Metis 辅助洞察，以及带提示注入防护的助手。',
+  hero_cta_live:'在线演示',hero_cta_docs:'文档',hero_sub:'<a href="https://ecosystem.modelmarket.dev" target="_blank" rel="noopener">AICOM生态系统</a>的一部分 · <a href="https://github.com/alexar76/aicom">monorepo</a> · MIT',
+  demo_title:'立即体验',demo_text:'logos.modelmarket.dev 在线运行。询问联邦相关问题，通过 NEXUS 探索能力，查看实测结算交易额与目录定价，或与 AI 助手聊天。',
+  demo_dashboard:'仪表板',demo_nexus:'NEXUS',demo_chat:'AI 聊天',
+  s1_title:'洞察与分析',s1_p:'用联邦实时数据回答自然语言查询。专业图表、可排序表格、热力图。',
+  s1_c1_title:'联邦洞察',s1_c1_p:'问"国库还能维持多久？"、"哪个枢纽变慢了？"、"有严重发现吗？"——带严重程度、来源和建议的类型化回答。',
+  s1_c2_title:'分析仪表板',s1_c2_p:'折线图（24小时趋势）、柱状图（按枢纽）、环形图（严重程度）、热力图日历（90天异常）、可排序可分组的数据表。',
+  s1_c3_title:'3D星座',s1_c3_p:'联邦作为生动的星空——枢纽节点为脉动球体，连接线，异常环。交互式 Three.js 可视化。',
+  s2_title:'NEXUS — 联邦游乐场',s2_p:'从目录中选择任何能力，编写 JSON 输入，调用——查看路由跟踪、价格和可验证结果。',
+  s2_c1_title:'能力浏览器',s2_c1_p:'联邦中每个能力的完整目录——名称、描述、价格、提供者枢纽。带实时刷新的下拉选择器。',
+  s2_c2_title:'手动调用',s2_c2_p:'编写 JSON，按 INVOKE，查看结果。路由跟踪显示哪个枢纽提供了服务、收取的价格和可验证证明。',
+  s3_title:'AI 助手',s3_p:'与 LOGOS 助手聊天。对分析存储的完整只读访问。提示注入防护。多提供商 LLM 支持。语音输入。',
+  s3_c1_title:'多提供商 LLM',s3_c1_p:'DeepSeek V4 Pro（默认）、Anthropic Claude、OpenAI、Ollama、LM Studio——与 MOMUS 相同的命名预设。',
+  s3_c2_title:'输入守卫',s3_c2_p:'Warden 风格的确定性提示注入过滤器——在到达 LLM 之前阻止提示提取、角色切换、令牌走私。',
+  s4_title:'消费分析',s4_p:'实测 24 小时结算交易额；仅在该测量存在时生成 30 天预测；按枢纽展示目录价格并支持 CSV 导出。缺失遥测显示为不可用，不会显示为零。',
+};
+Object.assign(L.ru,{
+  hero_kicker:'Аналитика федерации / live',scene_aria:'Интерактивная 3D-карта аналитики федерации LOGOS',scene_endpoints:'16 ЭНДПОИНТОВ',scene_telemetry:'ЖИВАЯ ТЕЛЕМЕТРИЯ',scene_insight:'СЛОЙ NL-ИНСАЙТОВ',scene_zscore:'СКОЛЬЗЯЩИЙ Z-SCORE',scene_anomaly:'МЕТОД АНОМАЛИЙ',scene_hint:'ТЯНИТЕ ДЛЯ ОРБИТЫ · КОЛЕСО ДЛЯ МАСШТАБА',
+  stat_views:'Разделов dashboard',stat_endpoints:'API-эндпоинтов',stat_languages:'Языков',stat_tests:'Тестов',stat_constellation:'Созвездие',link_insights:'Открыть инсайты',link_analytics:'Открыть аналитику',link_nexus:'Открыть NEXUS',link_try:'Попробовать',link_chat:'Открыть AI-чат',footer_line:'<strong style="font-family:var(--head);letter-spacing:.08em">LOGOS</strong> — аналитический узел <a href="https://ecosystem.modelmarket.dev/" target="_blank" rel="noopener">открытой агентной экономики AICOM</a>',footer_stack:'MIT · Python 3.11+ · FastAPI · React · Three.js · 6 разделов dashboard'
+});
+Object.assign(L.es,{
+  hero_kicker:'Inteligencia federada / en vivo',scene_aria:'Mapa 3D interactivo de la analítica federada LOGOS',scene_endpoints:'16 ENDPOINTS',scene_telemetry:'TELEMETRÍA EN VIVO',scene_insight:'CAPA DE INSIGHTS NL',scene_zscore:'Z-SCORE MÓVIL',scene_anomaly:'MÉTODO DE ANOMALÍAS',scene_hint:'ARRASTRA PARA ORBITAR · RUEDA PARA ZOOM',
+  stat_views:'Vistas del panel',stat_endpoints:'Endpoints API',stat_languages:'Idiomas',stat_tests:'Pruebas',stat_constellation:'Constelación',link_insights:'Abrir insights',link_analytics:'Abrir analítica',link_nexus:'Abrir NEXUS',link_try:'Probar',link_chat:'Abrir chat IA',footer_line:'<strong style="font-family:var(--head);letter-spacing:.08em">LOGOS</strong> — el nodo analítico de la <a href="https://ecosystem.modelmarket.dev/" target="_blank" rel="noopener">economía abierta de agentes AICOM</a>',footer_stack:'MIT · Python 3.11+ · FastAPI · React · Three.js · 6 vistas del panel'
+});
+Object.assign(L.fr,{
+  hero_kicker:'Intelligence fédérée / en direct',scene_aria:'Carte 3D interactive de l’analytique fédérée LOGOS',scene_endpoints:'16 ENDPOINTS',scene_telemetry:'TÉLÉMÉTRIE EN DIRECT',scene_insight:'COUCHE D’ANALYSE NL',scene_zscore:'Z-SCORE GLISSANT',scene_anomaly:'MÉTHODE D’ANOMALIE',scene_hint:'GLISSER POUR ORBITER · MOLETTE POUR ZOOMER',
+  stat_views:'Vues du tableau',stat_endpoints:'Endpoints API',stat_languages:'Langues',stat_tests:'Tests',stat_constellation:'Constellation',link_insights:'Ouvrir les analyses',link_analytics:'Ouvrir l’analytique',link_nexus:'Ouvrir NEXUS',link_try:'Essayer',link_chat:'Ouvrir le chat IA',footer_line:'<strong style="font-family:var(--head);letter-spacing:.08em">LOGOS</strong> — le nœud analytique de l’<a href="https://ecosystem.modelmarket.dev/" target="_blank" rel="noopener">économie ouverte d’agents AICOM</a>',footer_stack:'MIT · Python 3.11+ · FastAPI · React · Three.js · 6 vues du tableau'
+});
+Object.assign(L.zh,{
+  hero_kicker:'联邦智能 / 在线',scene_aria:'LOGOS 联邦分析交互式 3D 地图',scene_endpoints:'16 个端点',scene_telemetry:'实时遥测',scene_insight:'自然语言洞察层',scene_zscore:'滚动 Z-SCORE',scene_anomaly:'异常检测方法',scene_hint:'拖动旋转 · 滚轮缩放',
+  stat_views:'仪表板视图',stat_endpoints:'API 端点',stat_languages:'语言',stat_tests:'测试',stat_constellation:'3D 星座',link_insights:'打开洞察',link_analytics:'打开分析',link_nexus:'打开 NEXUS',link_try:'立即体验',link_chat:'打开 AI 聊天',footer_line:'<strong style="font-family:var(--head);letter-spacing:.08em">LOGOS</strong> — <a href="https://ecosystem.modelmarket.dev/" target="_blank" rel="noopener">AICOM 开放智能体经济</a>的分析节点',footer_stack:'MIT · Python 3.11+ · FastAPI · React · Three.js · 6 个仪表板视图'
+});
+Object.assign(L.en,{"hero_title": "One node.\nEvery insight.", "hero_cta_live": "Open LOGOS", "hero_tagline": "Understand the agents, services and activity across your economy. LOGOS turns federation data into a clear view of what is working, what is changing, and what needs your attention.", "scene_endpoints": "CONNECTED SOURCES", "scene_telemetry": "FEDERATION MODEL", "stat_endpoints": "By design", "stat_tests": "Open source", "skip": "Skip to content", "nav_aria": "Primary navigation"});
+Object.assign(L.ru,{"hero_title": "Один узел.\nВсе инсайты.", "hero_cta_live": "Открыть LOGOS", "hero_tagline": "Наблюдайте за агентами, сервисами и их работой в общей экономике. LOGOS превращает данные федерации в понятную картину: что работает, что меняется и что требует внимания.", "scene_endpoints": "СВЯЗАННЫЕ ИСТОЧНИКИ", "scene_telemetry": "МОДЕЛЬ ФЕДЕРАЦИИ", "stat_endpoints": "Только чтение", "stat_tests": "Открытый код", "skip": "К содержимому", "nav_aria": "Основная навигация", "scene_fallback": "Откройте живую сеть в панели LOGOS. Интерактивная 3D-сцена недоступна в этом браузере."});
+Object.assign(L.es,{"hero_title": "Un nodo.\nCada insight.", "hero_cta_live": "Abrir LOGOS", "hero_tagline": "Comprende los agentes, servicios y la actividad de tu economía. LOGOS convierte los datos de la federación en una visión clara de lo que funciona, lo que cambia y lo que necesita atención.", "scene_endpoints": "FUENTES CONECTADAS", "scene_telemetry": "MODELO DE FEDERACIÓN", "stat_endpoints": "Solo lectura", "stat_tests": "Código abierto", "skip": "Ir al contenido", "nav_aria": "Navegación principal", "scene_fallback": "Explora la red en vivo en el panel. El 3D interactivo no está disponible en este navegador."});
+Object.assign(L.fr,{"hero_title": "Un nœud.\nChaque constat.", "hero_cta_live": "Ouvrir LOGOS", "hero_tagline": "Comprenez les agents, les services et l’activité de votre économie. LOGOS transforme les données de la fédération en une vue claire de ce qui fonctionne, de ce qui change et de ce qui mérite votre attention.", "scene_endpoints": "SOURCES CONNECTÉES", "scene_telemetry": "MODÈLE DE FÉDÉRATION", "stat_endpoints": "Lecture seule", "stat_tests": "Code ouvert", "skip": "Aller au contenu", "nav_aria": "Navigation principale", "scene_fallback": "Explorez le réseau en direct dans le tableau de bord. La 3D interactive est indisponible dans ce navigateur."});
+Object.assign(L.zh,{"hero_title": "一个节点。\n所有洞察。", "hero_cta_live": "打开 LOGOS", "hero_tagline": "了解经济中的智能体、服务及其活动。LOGOS 将联邦数据转化为清晰的视图：什么在正常运行，什么正在变化，什么需要关注。", "scene_endpoints": "互联数据源", "scene_telemetry": "联邦模型", "stat_endpoints": "只读设计", "stat_tests": "开源", "skip": "跳至内容", "nav_aria": "主导航", "scene_fallback": "在仪表板中探索实时网络。此浏览器无法显示交互式 3D 场景。"});
+const defaults=new Map();
+document.querySelectorAll('[data-i18n],[data-i18n-html]').forEach(el=>defaults.set(el,el.hasAttribute('data-i18n-html')?el.innerHTML:el.textContent));
+const ariaDefaults=new Map();
+document.querySelectorAll('[data-i18n-aria]').forEach(el=>ariaDefaults.set(el,el.getAttribute('aria-label')||''));
+function applyLang(lang){
+  const d=L[lang]||{};
+  document.querySelectorAll('[data-i18n],[data-i18n-html]').forEach(el=>{
+    const k=el.getAttribute('data-i18n')||el.getAttribute('data-i18n-html');
+    const value=k&&d[k]?d[k]:defaults.get(el);
+    if(value!=null){if(el.hasAttribute('data-i18n-html'))el.innerHTML=value;else el.textContent=value;}
+  });
+  document.querySelectorAll('[data-i18n-aria]').forEach(el=>{const k=el.getAttribute('data-i18n-aria');el.setAttribute('aria-label',(k&&d[k])||ariaDefaults.get(el)||'');});
+  document.documentElement.lang=lang;
+  document.querySelectorAll('.lang-sw button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.lang===lang)));
+}
+// Language switcher
+document.querySelectorAll('.lang-sw button').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    const lang=btn.getAttribute('data-lang');
+    document.querySelectorAll('.lang-sw button').forEach(b=>b.classList.remove('on'));
+    btn.classList.add('on');
+    try{localStorage.setItem('logos-landing-lang',lang);}catch{}
+    applyLang(lang||'en');
+  });
+});
+// Restore saved language
+let saved='en';
+try{saved=localStorage.getItem('logos-landing-lang')||'en';}catch{}
+const requested=new URLSearchParams(location.search).get('lang');
+if(requested && requested in L)saved=requested;
+if(!(saved in L))saved='en';
+document.querySelectorAll('.lang-sw button').forEach(b=>b.classList.remove('on'));
+document.querySelector(`.lang-sw button[data-lang="${saved}"]`)?.classList.add('on');
+applyLang(saved);
+function updateNav(){
+  const hash=location.hash||'#main';
+  document.querySelectorAll('.nav-links a').forEach(a=>{
+    const active=a.getAttribute('href')===hash;
+    a.classList.toggle('on',active);
+    if(active)a.setAttribute('aria-current','location');else a.removeAttribute('aria-current');
+  });
+}
+window.addEventListener('hashchange',updateNav);
+updateNav();
+</script>
+<script type="module" src="scene.bundle.js"></script>
+</body>
+</html>
