@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://logos.modelmarket.dev/sitemap.xml

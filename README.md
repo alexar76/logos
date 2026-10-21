@@ -15,7 +15,7 @@
 
 <!-- aicom-readme-badges -->
 <p align="center">
-  <a href="https://github.com/alexar76/logos/actions/workflows/ci.yml"><img src="https://raw.githubusercontent.com/alexar76/logos/refs/heads/main/docs/badges/ci.svg" alt="CI" /></a>
+  <a href="https://github.com/alexar76/logos/actions/workflows/ci.yml"><img src="https://github.com/alexar76/logos/actions/workflows/ci.yml/badge.svg" alt="CI" /></a>
   <a href="https://alexar76.github.io/logos/"><img src="https://raw.githubusercontent.com/alexar76/logos/refs/heads/main/docs/badges/landing.svg" alt="Landing" /></a>
   <img src="https://raw.githubusercontent.com/alexar76/logos/refs/heads/main/docs/badges/tests.svg" alt="76 tests passed" />
   <img src="https://raw.githubusercontent.com/alexar76/logos/refs/heads/main/docs/badges/python.svg" alt="Python >=3.11" />
