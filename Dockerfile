@@ -1,9 +1,10 @@
+# Node security baseline: 22.23.4 (2026-10-21 security release).
 # LOGOS — federation analytics engine
 # Build FROM THE MONOREPO ROOT so oracles/core is in context:
 #     docker build -f logos/Dockerfile -t logos .
 
 # ── Stage 1: frontend build ──────────────────────────────────────────────────
-FROM node:22-alpine AS frontend-builder
+FROM node:22.23.4-alpine AS frontend-builder
 WORKDIR /src
 COPY logos/frontend/package.json logos/frontend/package-lock.json ./
 RUN npm ci --no-audit --no-fund 2>/dev/null || npm install --no-audit --no-fund

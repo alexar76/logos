@@ -21,9 +21,10 @@ Routes:
 
 from __future__ import annotations
 
-import hmac
 import asyncio
 import contextlib
+import hmac
+import ipaddress
 import logging
 import math
 import os
@@ -37,6 +38,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, StreamingResponse
 from pydantic import BaseModel, Field
 
+from logos import __version__
 from logos.agent.assistant import LogosAssistant
 from logos.agent.config import AgentConfig
 from logos.agent.guard import InputGuard
@@ -45,7 +47,6 @@ from logos.anomalies.detector import AnomalyDetector
 from logos.config import LogosConfig
 from logos.models import AskRequest
 from logos.store import LogosStore
-from logos import __version__
 
 
 # Request/response models at module scope — FastAPI generates the schema from
@@ -63,6 +64,17 @@ logger = logging.getLogger("logos")
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(name)s] %(levelname)s %(message)s")
 
 
+def _from_local_proxy(peer: str) -> bool:
+    """Could the TCP peer be our own reverse proxy (this host or its docker network)? Only
+    then are X-Real-IP / X-Forwarded-For the caller's: anyone reaching the port another way
+    writes them itself and gets a fresh rate-limit bucket per request."""
+    try:
+        addr = ipaddress.ip_address((peer or "").split("%")[0])
+    except ValueError:
+        return False
+    return addr.is_loopback or addr.is_private or addr.is_link_local
+
+
 def _client_key(request: Request) -> str:
     """Who to rate-limit.
 
@@ -70,9 +82,12 @@ def _client_key(request: Request) -> str:
     app binds loopback and the edge is the only way in — so one bucket was shared by
     the entire internet and a single eager poller 429'd everyone else. (The Alien
     Monitor did exactly that: four endpoints on a 1.5 s tick.) The edge sets
-    X-Real-IP / X-Forwarded-For, and nothing else can reach this process, so the
-    header is the trustworthy identity here and the socket address is not.
+    X-Real-IP / X-Forwarded-For, so behind it the header is the identity; a caller
+    that reaches the port directly is keyed on its own address instead.
     """
+    peer = request.client.host if request.client else ""
+    if not _from_local_proxy(peer):
+        return peer or "unknown"  # not through the edge: the headers are the caller's own
     real = (request.headers.get("x-real-ip") or "").strip()
     if real:
         return real
@@ -82,7 +97,7 @@ def _client_key(request: Request) -> str:
         # so the left entry is the caller's own claim and a fresh one per request would mean a
         # fresh, empty bucket per request.
         return hops[-1]
-    return request.client.host if request.client else "unknown"
+    return peer or "unknown"
 
 
 def create_app(config: LogosConfig | None = None) -> FastAPI:

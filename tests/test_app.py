@@ -22,7 +22,8 @@ def client():
         cfg.cors_origins = "http://test"
         cfg.hub_url = "http://127.0.0.1:19999"  # unreachable
         app = create_app(cfg)
-        with TestClient(app) as c:
+        # The edge reaches LOGOS from loopback; only such a peer's X-Real-IP is believed.
+        with TestClient(app, client=("127.0.0.1", 50000)) as c:
             yield c
 
 
@@ -344,17 +345,34 @@ class TestRateLimitIdentity:
         request in a fresh bucket by rotating a forged first entry."""
         from logos.app import _client_key
 
+        class _Edge:
+            host = "127.0.0.1"
+
         class _Forged:
             headers = {"x-forwarded-for": "198.51.100.4, 10.0.0.1, 203.0.113.9"}
-            client = None
+            client = _Edge()
 
         assert _client_key(_Forged()) == "203.0.113.9"
 
         class _RealIpWins:
             headers = {"x-real-ip": "203.0.113.9", "x-forwarded-for": "198.51.100.4"}
-            client = None
+            client = _Edge()
 
         assert _client_key(_RealIpWins()) == "203.0.113.9"
+
+    def test_headers_from_a_direct_caller_are_ignored(self):
+        """Someone reaching the port without the edge writes X-Real-IP itself; a fresh
+        value per request would be a fresh, empty bucket per request."""
+        from logos.app import _client_key
+
+        class _Direct:
+            host = "93.184.216.34"
+
+        class _Spoofed:
+            headers = {"x-real-ip": "203.0.113.9", "x-forwarded-for": "198.51.100.4"}
+            client = _Direct()
+
+        assert _client_key(_Spoofed()) == "93.184.216.34"
 
 
 # ── 2026-08 audit: anonymous LLM spend on the public deployment ──────────────
