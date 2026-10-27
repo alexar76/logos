@@ -33,6 +33,19 @@ build-backend = "hatchling.build"
 [tool.hatch.build.targets.wheel]
 packages = ["logos"]
 
+# Without a file list hatchling packs whatever lies in the tree that no .gitignore it finds hides.
+# On 2026-10-26 a build in a working copy took frontend/node_modules into the sdist (3,885
+# files, 25 MB, symlinks among them) and the publish script's secret gate stopped it; built
+# where the monorepo's .gitignore is out of reach, data/ (key material) would go the same way.
+# An include list cannot be defeated by what happens to lie in the tree (see oracles/core).
+[tool.hatch.build.targets.sdist]
+include = [
+    "/logos",
+    "/tests",
+    "/README.md",
+    "/pyproject.toml",
+]
+
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
 testpaths = ["tests"]
