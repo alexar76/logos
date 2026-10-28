@@ -29,6 +29,8 @@ import logging
 import math
 import os
 import re
+import socket
+import sys
 import time
 from collections import defaultdict
 from contextlib import asynccontextmanager
@@ -64,15 +66,82 @@ logger = logging.getLogger("logos")
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(name)s] %(levelname)s %(message)s")
 
 
-def _from_local_proxy(peer: str) -> bool:
-    """Could the TCP peer be our own reverse proxy (this host or its docker network)? Only
-    then are X-Real-IP / X-Forwarded-For the caller's: anyone reaching the port another way
-    writes them itself and gets a fresh rate-limit bucket per request."""
+# Which TCP peers may name the caller through X-Real-IP / X-Forwarded-For. Loopback only by default:
+# trusting every private address let any neighbour on the same docker network or LAN send its own
+# (Vulnetix GCVE-110-VULN-PYPI-2026-000638). LOGOS_TRUSTED_PROXIES is a comma list of addresses,
+# CIDRs, host names (a compose service such as the frontend's nginx, looked up again every minute)
+# and `gateway` (this container's default route: the host's nginx, when the port is published on the
+# host).
+_TRUSTED_PROXIES_DEFAULT = "127.0.0.1/32,::1/128"
+_PROXY_NAME_TTL = 60.0
+_PROC_NET_ROUTE = "/proc/net/route"
+_proxy_names: dict[str, tuple[float, tuple]] = {}
+
+
+def _default_gateway() -> str | None:
+    """The IPv4 default route's gateway, from /proc/net/route (Linux), or None."""
+    try:
+        with open(_PROC_NET_ROUTE, encoding="ascii", errors="replace") as fh:
+            next(fh, None)  # the header line
+            for line in fh:
+                f = line.split()
+                if len(f) > 2 and f[1] == "00000000":
+                    raw = bytes.fromhex(f[2])
+                    return str(ipaddress.IPv4Address(raw[::-1] if sys.byteorder == "little" else raw))
+    except (OSError, ValueError):
+        return None
+    return None
+
+
+def _proxy_name_addresses(name: str) -> tuple:
+    now = time.monotonic()
+    hit = _proxy_names.get(name)
+    if hit and now - hit[0] < _PROXY_NAME_TTL:
+        return hit[1]
+    try:
+        found = {ipaddress.ip_address(info[4][0].split("%")[0])
+                 for info in socket.getaddrinfo(name, None, proto=socket.IPPROTO_TCP)}
+    except (OSError, ValueError):
+        found = set()
+    addrs = tuple(sorted(found, key=str))
+    _proxy_names[name] = (now, addrs)
+    return addrs
+
+
+def _peer_is_trusted_proxy(peer: str) -> bool:
+    """Is the TCP peer one of LOGOS_TRUSTED_PROXIES?"""
     try:
         addr = ipaddress.ip_address((peer or "").split("%")[0])
     except ValueError:
         return False
-    return addr.is_loopback or addr.is_private or addr.is_link_local
+    if addr.version == 6 and addr.ipv4_mapped:
+        addr = addr.ipv4_mapped
+    raw = os.environ.get("LOGOS_TRUSTED_PROXIES")
+    for entry in (_TRUSTED_PROXIES_DEFAULT if raw is None else raw).split(","):
+        entry = entry.strip()
+        if not entry:
+            continue
+        if entry == "gateway":
+            gateway = _default_gateway()
+            if gateway and addr == ipaddress.ip_address(gateway):
+                return True
+            continue
+        try:
+            if addr in ipaddress.ip_network(entry, strict=False):
+                return True
+            continue
+        except ValueError:
+            pass
+        if addr in _proxy_name_addresses(entry):
+            return True
+    return False
+
+
+def _from_trusted_proxy(peer: str) -> bool:
+    """Is the TCP peer our own reverse proxy (LOGOS_TRUSTED_PROXIES; loopback by default)? Only
+    then are X-Real-IP / X-Forwarded-For the caller's: anyone reaching the port another way writes
+    them itself and gets a fresh rate-limit bucket per request."""
+    return _peer_is_trusted_proxy(peer)
 
 
 def _client_key(request: Request) -> str:
@@ -86,7 +155,7 @@ def _client_key(request: Request) -> str:
     that reaches the port directly is keyed on its own address instead.
     """
     peer = request.client.host if request.client else ""
-    if not _from_local_proxy(peer):
+    if not _from_trusted_proxy(peer):
         return peer or "unknown"  # not through the edge: the headers are the caller's own
     real = (request.headers.get("x-real-ip") or "").strip()
     if real:

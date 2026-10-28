@@ -5,7 +5,7 @@ name = "aimarket-logos"
 # Bumped because the tree diverged from the published 0.1.0 wheel: `pip install
 # aimarket-logos==0.1.0` served code this tree had already moved past, at the same version
 # string, so every fix in it was unpublishable and unreachable.
-version = "0.2.1"
+version = "0.2.2"
 description = "LOGOS — federation-wide analytics engine: cross-hub query, anomaly detection, NL insights via Metis council"
 readme = "README.md"
 requires-python = ">=3.11"

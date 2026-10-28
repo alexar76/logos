@@ -410,3 +410,46 @@ def test_a_configured_token_is_still_the_real_gate(monkeypatch):
 
     with TestClient(create_app()) as client:
         assert client.post("/api/v1/ask", json={"query": "x"}).status_code == 401
+
+
+def test_trusted_proxies_are_loopback_unless_named(monkeypatch, tmp_path):
+    # Vulnetix GCVE-110-VULN-PYPI-2026-000638: X-Real-IP / X-Forwarded-For were taken from any
+    # private peer, so a neighbour on the same docker network or LAN named its own address.
+    import ipaddress
+    import sys
+    import logos.app as trust
+
+    monkeypatch.delenv("LOGOS_TRUSTED_PROXIES", raising=False)
+    assert trust._peer_is_trusted_proxy("127.0.0.1") and trust._peer_is_trusted_proxy("::1")
+    for neighbour in ("172.18.0.7", "10.0.0.5", "192.168.1.20", "fe80::1", "not-an-address", ""):
+        assert not trust._peer_is_trusted_proxy(neighbour), neighbour
+    monkeypatch.setenv("LOGOS_TRUSTED_PROXIES", "10.1.0.0/16, 172.18.0.9")
+    assert trust._peer_is_trusted_proxy("10.1.2.3") and trust._peer_is_trusted_proxy("172.18.0.9")
+    assert not trust._peer_is_trusted_proxy("127.0.0.1")  # the list replaces the default
+    route = tmp_path / "route"
+    gateway_hex = "010012AC" if sys.byteorder == "little" else "AC120001"  # 172.18.0.1
+    route.write_text("Iface\tDestination\tGateway\tFlags\n"
+                     "eth0\t00000000\t" + gateway_hex + "\t0003\n")
+    monkeypatch.setattr(trust, "_PROC_NET_ROUTE", str(route))
+    monkeypatch.setenv("LOGOS_TRUSTED_PROXIES", "gateway")
+    assert trust._peer_is_trusted_proxy("172.18.0.1") and not trust._peer_is_trusted_proxy("172.18.0.2")
+    named = {"frontend": (ipaddress.ip_address("172.18.0.5"),)}
+    monkeypatch.setattr(trust, "_proxy_name_addresses", lambda name: named.get(name, ()))
+    monkeypatch.setenv("LOGOS_TRUSTED_PROXIES", "127.0.0.1, frontend")
+    assert trust._peer_is_trusted_proxy("172.18.0.5") and not trust._peer_is_trusted_proxy("172.18.0.6")
+
+
+def test_the_server_binds_loopback_by_default(monkeypatch):
+    # Vulnetix GCVE-110-VULN-PYPI-2026-000638: logos bound 0.0.0.0 by default.
+    import uvicorn
+
+    from logos import main as logos_main
+
+    seen = {}
+    monkeypatch.setattr(uvicorn, "run", lambda app, **kw: seen.update(kw))
+    monkeypatch.delenv("LOGOS_HOST", raising=False)
+    logos_main.main()
+    assert seen["host"] == "127.0.0.1"
+    monkeypatch.setenv("LOGOS_HOST", "0.0.0.0")
+    logos_main.main()
+    assert seen["host"] == "0.0.0.0"

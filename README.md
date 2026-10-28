@@ -215,6 +215,8 @@ The assistant has:
 | Variable | Default | Description |
 |----------|---------|-------------|
 | `LOGOS_PORT` | `9460` | Listen port |
+| `LOGOS_HOST` | `127.0.0.1` | Listen address (`python -m logos.main`); `0.0.0.0` only to serve other machines directly (since 0.2.2) |
+| `LOGOS_TRUSTED_PROXIES` | loopback | Peers whose `X-Real-IP` / `X-Forwarded-For` count for the rate limit: addresses, CIDRs, host names, `gateway` (since 0.2.2) |
 | `LOGOS_HUB_URL` | `http://127.0.0.1:9083` | Hub base URL |
 | `LOGOS_METIS_URL` | — | Metis for NL understanding |
 | `LOGOS_POLL_INTERVAL_S` | `300` | Background poll interval |
