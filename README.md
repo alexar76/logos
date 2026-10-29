@@ -1,10 +1,3 @@
-<!-- aicom-mirror-notice -->
-> **🔄 Synced from a monorepo — but with a live history.** `logos` mirrors the
-> canonical AI-Factory monorepo. History here is append-only (no force-push).
-> **Pull requests are welcome** — merged PRs are imported back into the monorepo
-> and re-synced here, so your contribution becomes canonical.
-> 💬 **[Issues](https://github.com/alexar76/logos/issues)** · **[Pull requests](https://github.com/alexar76/logos/pulls)** both welcome.
-
 # LOGOS — Federation Analytics Engine
 
 <p align="center">
@@ -25,6 +18,9 @@
   <a href="https://github.com/alexar76/logos/blob/main/LICENSE"><img src="https://raw.githubusercontent.com/alexar76/logos/refs/heads/main/docs/badges/license.svg" alt="License: MIT" /></a>
 </p>
 <!-- /aicom-readme-badges -->
+
+<!-- aicom-mirror-notice -->
+> 🔄 Synced from the [AI-Factory monorepo](https://github.com/alexar76/aicom) (append-only history). **Pull requests are welcome** — merged PRs are imported back and re-synced here. [Issues](https://github.com/alexar76/logos/issues) · [Pull requests](https://github.com/alexar76/logos/pulls)
 
 > 🌐 **English** · [Русский](docs/use-cases.ru.md) · [Español](docs/use-cases.es.md) · [Français](docs/use-cases.fr.md) · [中文](docs/use-cases.zh.md) · [Glossary](https://github.com/alexar76/aicom/blob/main/docs/localization-glossary.md)
 
